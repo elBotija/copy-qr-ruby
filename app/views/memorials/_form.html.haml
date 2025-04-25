@@ -1,0 +1,62 @@
+= form_for @memorial do |f|
+  - if @memorial.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@memorial.errors.count, "error")} prohibited this memorial from being saved:"
+      %ul
+        - @memorial.errors.full_messages.each do |message|
+          %li= message
+  .flex.md:space-x-4.flex-wrap{class: "md:!flex-nowrap"}
+    .mb-3.w-full
+      = f.label :first_name, class: 'form-label'
+      = f.text_field :first_name, class: 'form-control'
+    .mb-3.w-full
+      = f.label :last_name, class: 'form-label'
+      = f.text_field :last_name, class: 'form-control'
+  .flex.md:space-x-4.flex-wrap{class: "md:!flex-nowrap"}
+    .mb-3.w-full
+      = f.label :dob, class: 'form-label'
+      = f.date_field :dob, class: 'form-control'
+    .mb-3.w-full
+      = f.label :dod, class: 'form-label'
+      = f.date_field :dod, class: 'form-control'
+  .mb-3
+    = f.label :religion, class: 'form-label'
+    - religions_for_select = [['Católico', 0], ['Judio', 1], ['Musulmán', 3]]
+    = f.select :religion, religions_for_select, { include_blank: true }, { class: 'form-select' }
+
+  .mb-3
+    = f.label :caption, class: 'form-label'
+    = f.text_field :caption, class: 'form-control'
+  .mb-3
+    = f.label :bio, class: 'form-label'
+    = f.text_area :bio, class: 'form-control', rows: 10
+
+  .flex.mb-3.md:space-x-4.flex-wrap{class: "md:!flex-nowrap"}
+    .mb-3.w-full.flex.flex-col{class: f.object.profile_image.attached? ? "min-h-[150px]" : ""}
+      = f.label :profile_image, class: 'form-label'
+      .flex-grow.relative
+        - if f.object.profile_image.attached?
+          .relative.inline-block
+            = image_tag f.object.profile_image.representation(resize_to_limit: [100, 100])
+            %button.absolute.-top-2.-right-2.rounded-full.bg-white.text-red-500.w-6.h-6.flex.items-center.justify-center.border.border-red-500{type: "button", title: "Eliminar imagen"}
+              %svg.w-4.h-4{xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor"}
+                %path{"stroke-linecap" => "round", "stroke-linejoin" => "round", "stroke-width" => "2", d: "M6 18L18 6M6 6l12 12"}
+      = f.file_field :profile_image, class: 'form-control mt-auto', accept: 'image/png,image/jpeg'
+
+    .mb-3.w-full.flex.flex-col{class: f.object.hero_image.attached? ? "min-h-[150px]" : ""}
+      = f.label :hero_image, class: 'form-label'
+      .flex-grow.relative
+        - if f.object.hero_image.attached?
+          .relative.inline-block
+            = image_tag f.object.hero_image.representation(resize_to_limit: [200, 100])
+            %button.absolute.-top-2.-right-2.rounded-full.bg-white.text-red-500.w-6.h-6.flex.items-center.justify-center.border.border-red-500{type: "button", title: "Eliminar imagen"}
+              %svg.w-4.h-4{xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor"}
+                %path{"stroke-linecap" => "round", "stroke-linejoin" => "round", "stroke-width" => "2", d: "M6 18L18 6M6 6l12 12"}
+      = f.file_field :hero_image, class: 'form-control mt-auto', accept: 'image/png,image/jpeg'
+
+  .mb-3
+    = render partial: 'photos_drag_n_drop', locals: { f: f }
+
+  .actions
+    = f.submit class: 'btn btn-primary'
+    = link_to 'Cancelar', root_path, class: 'btn btn-outline-danger'

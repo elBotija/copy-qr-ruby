@@ -1,0 +1,224 @@
+/* Estilos generales */
+body.bg-body-tertiary {
+  background-color: #00524b !important;
+  padding: 0 !important;
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.navbar {
+  background-color: white;
+}
+
+.controls {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+.control-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+select, input, button {
+  padding: 8px 12px;
+  border: 2px solid white;
+  border-radius: 4px;
+  background: transparent;
+  color: white;
+  font-size: 16px;
+}
+
+select {
+  min-width: 200px;
+}
+
+input[type="number"] {
+  width: 80px;
+}
+
+button {
+  background-color: white;
+  color: #00524b;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  padding: 10px 15px;
+}
+
+button:hover {
+  background-color: #e0e0e0;
+}
+
+label {
+  color: white;
+  font-size: 16px;
+}
+
+/* Área de impresión */
+#qrs-container {
+  width: 100%;
+}
+
+/* Contenedor principal que se imprimirá */
+.print-container {
+  background-color: #00524b;
+  width: 21cm;
+  height: 29.7cm;
+  position: relative;
+  margin: 0 auto 20px auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+/* Contenedor de cada QR */
+.qr-wrapper {
+  width: 4.87cm;
+  height: 5.7cm;
+  position: absolute;
+  background-color: #00524b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  page-break-inside: avoid;
+}
+
+/* Contenedor interno del QR */
+.qr-container {
+  text-align: center;
+  position: relative;
+  background-color: #00524b;
+  padding: 5px;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas {
+  background: white;
+  border-radius: 5px;
+  padding: 5px;
+  box-sizing: content-box;
+  width: 3.8cm;
+  height: 3.8cm;
+  object-fit: contain;
+}
+
+.qr-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 30%;
+  height: auto;
+  background: white;
+  padding: 5px;
+}
+
+@font-face {
+  font-family: 'Winter Beauty';
+  src: url('winterbeauty-Script.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.qr-footer {
+  color: white;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  font-size: 1.4rem;
+  font-family: 'Winter Beauty', sans-serif;
+  text-align: center;
+}
+
+.qr-label {
+  color: white;
+  font-size: 0.8em;
+  margin-top: 2px;
+  display: block;
+}
+
+/* Estilos para impresión */
+@page {
+  size: A4;
+  margin: 0;
+  background-color: #00524b;
+}
+
+@media print {
+  body, html {
+    background-color: #00524b !important;
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Ocultar elementos no necesarios para impresión */
+  .controls,
+  header,
+  .navbar,
+  .container-xxl > *:not(#qrs-container),
+  .offcanvas-lg,
+  h1,
+  .turbo-progress-bar {
+    display: none !important;
+  }
+
+  /* Ajustar contenedor principal */
+  .container-xxl {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+
+  /* Ajustar contenedor de QRs */
+  #qrs-container {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print-container {
+    width: 21cm;
+    height: 29.7cm;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    page-break-after: always;
+    background-color: #00524b !important;
+    box-shadow: none;
+  }
+
+  .qr-wrapper {
+    background-color: #00524b !important;
+  }
+
+  .qr-container {
+    background-color: #00524b !important;
+  }
+
+  canvas {
+    background: white !important;
+    padding: 5px !important;
+  }
+
+  .qr-footer {
+    color: white !important;
+  }
+
+  .qr-label {
+    display: none;
+  }
+}

@@ -1,0 +1,18 @@
+- content_for :head do
+  = stylesheet_link_tag "qr/new", media: 'all', 'data-turbo-track': 'reload'
+  = javascript_include_tag "qr/lib", 'data-turbo-track': 'reload'
+
+.controls
+  .control-group
+    = label_tag(:membership, 'Membresia:')
+    = select_tag(:membership, options_for_select(QrCode::MEMBERSHIP_TYPES))
+  .control-group
+    %label{for: "qrCount"} Cantidad:
+    %input#qrCount{type: "number", value: "16", min: "1", max: "100"}
+  .control-group
+    %button{onclick: "generateQRCodes()"} Generar QRs
+    %button{onclick: "window.print()"} Guardar PDF
+
+#qrs-container
+
+= javascript_include_tag 'qr/new'

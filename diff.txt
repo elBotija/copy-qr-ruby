@@ -1,0 +1,924 @@
+diff --git a/Gemfile b/Gemfile
+index 4c0b2d4..ae1d0b9 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -87,3 +87,4 @@ group :test do
+   gem "selenium-webdriver"
+   gem "shoulda-matchers", "~> 6.0"
+ end
++gem 'mercadopago-sdk', '~> 2.2'
+diff --git a/Gemfile.lock b/Gemfile.lock
+index 06cf14b..12108fd 100644
+--- a/Gemfile.lock
++++ b/Gemfile.lock
+@@ -117,6 +117,7 @@ GEM
+     devise-i18n (1.12.1)
+       devise (>= 4.9.0)
+     diff-lcs (1.5.1)
++    domain_name (0.6.20240107)
+     drb (2.2.1)
+     error_highlight (0.6.0)
+     erubi (1.13.0)
+@@ -124,6 +125,8 @@ GEM
+     faker (3.5.1)
+       i18n (>= 1.8.11, < 2)
+     ffi (1.17.1-aarch64-linux-gnu)
++    ffi (1.17.1-arm64-darwin)
++    ffi (1.17.1-x86_64-linux-gnu)
+     globalid (1.2.1)
+       activesupport (>= 6.1)
+     haml (6.3.0)
+@@ -140,6 +143,9 @@ GEM
+       haml (>= 4.0)
+       nokogiri (>= 1.6.0)
+       ruby_parser (~> 3.5)
++    http-accept (1.7.0)
++    http-cookie (1.0.8)
++      domain_name (~> 0.5)
+     i18n (1.14.6)
+       concurrent-ruby (~> 1.0)
+     image_processing (1.13.0)
+@@ -166,9 +172,15 @@ GEM
+       net-smtp
+     marcel (1.0.4)
+     matrix (0.4.2)
++    mercadopago-sdk (2.2.1)
++      json (~> 2.5)
++      rest-client (~> 2.1)
++    mime-types (3.6.2)
++      logger
++      mime-types-data (~> 3.2015)
++    mime-types-data (3.2025.0325)
+     mini_magick (4.13.2)
+     mini_mime (1.1.5)
+-    mini_portile2 (2.8.7)
+     minitest (5.25.1)
+     msgpack (1.7.5)
+     mutex_m (0.2.0)
+@@ -181,6 +193,7 @@ GEM
+       timeout
+     net-smtp (0.5.0)
+       net-protocol
++    netrc (0.11.0)
+     nio4r (2.7.4)
+     nokogiri (1.16.7-aarch64-linux)
+       racc (~> 1.4)
+@@ -248,6 +261,11 @@ GEM
+     responders (3.1.1)
+       actionpack (>= 5.2)
+       railties (>= 5.2)
++    rest-client (2.1.0)
++      http-accept (>= 1.7.0, < 2.0)
++      http-cookie (>= 1.0.2, < 2.0)
++      mime-types (>= 1.16, < 4.0)
++      netrc (~> 0.8)
+     rexml (3.3.9)
+     rspec-core (3.13.2)
+       rspec-support (~> 3.13.0)
+@@ -313,9 +331,9 @@ GEM
+       actionpack (>= 6.1)
+       activesupport (>= 6.1)
+       sprockets (>= 3.0.0)
+-    sqlite3 (2.2.0)
+-      mini_portile2 (~> 2.8.0)
+     sqlite3 (2.2.0-aarch64-linux-gnu)
++    sqlite3 (2.2.0-arm64-darwin)
++    sqlite3 (2.2.0-x86_64-linux-gnu)
+     stimulus-rails (1.3.4)
+       railties (>= 6.0.0)
+     stringio (3.1.2)
+@@ -367,6 +385,7 @@ DEPENDENCIES
+   html2haml (~> 2.3)
+   image_processing (~> 1.13)
+   importmap-rails
++  mercadopago-sdk (~> 2.2)
+   puma (>= 5.0)
+   rails (~> 7.1.5)
+   rails-i18n (~> 7.0.0)
+diff --git a/MP-docu.md b/MP-docu.md
+new file mode 100644
+index 0000000..b476a38
+--- /dev/null
++++ b/MP-docu.md
+@@ -0,0 +1,310 @@
++# Documentación: Implementación de Mercado Pago en Quiero Recordarte
++
++## Índice
++1. [Descripción General](#descripción-general)
++2. [Requisitos Previos](#requisitos-previos)
++3. [Estructura de la Implementación](#estructura-de-la-implementación)
++4. [Instalación](#instalación)
++5. [Configuración](#configuración)
++6. [Flujo de Pagos](#flujo-de-pagos)
++7. [Webhooks y Notificaciones](#webhooks-y-notificaciones)
++8. [Modelos y Base de Datos](#modelos-y-base-de-datos)
++9. [Pruebas y Testing](#pruebas-y-testing)
++10. [Solución de Problemas](#solución-de-problemas)
++
++## Descripción General
++
++Este documento describe la implementación de la pasarela de pagos de Mercado Pago en el proyecto "Quiero Recordarte". Esta integración permite a los usuarios realizar el pago de membresías a través de Mercado Pago, procesando transacciones y actualizando el estado de las órdenes automáticamente.
++
++## Requisitos Previos
++
++- Ruby y Rails instalados
++- Docker y Docker Compose configurados
++- Cuenta de desarrollador en Mercado Pago
++- Credenciales de API de Mercado Pago (Access Token y Public Key)
++
++## Estructura de la Implementación
++
++La implementación consta de los siguientes componentes principales:
++
++1. **Modelos**:
++   - `Order`: Almacena información sobre los pedidos y su estado
++   - `Customer`: Datos del cliente que realiza la compra
++   - `Membership`: Detalles de la membresía activada después del pago
++
++2. **Controlador de Pagos**: 
++   - `PaymentsController`: Maneja la creación de preferencias de pago, webhooks y consultas de estado
++
++3. **Configuración**:
++   - Inicializador de Mercado Pago
++   - Variables de entorno para credenciales
++
++4. **Rutas API**:
++   - Endpoints para la creación de preferencias y gestión de webhooks
++
++## Instalación
++
++El script de instalación realiza los siguientes pasos automáticamente:
++
++1. Verifica los prerrequisitos (Ruby, Bundle, Rails)
++2. Agrega la gema de Mercado Pago al Gemfile
++3. Instala las dependencias
++4. Crea el inicializador de Mercado Pago
++5. Genera los modelos necesarios
++6. Crea el controlador de pagos
++7. Actualiza las rutas de la aplicación
++8. Ejecuta las migraciones de la base de datos
++
++Para ejecutar el script de instalación:
++
++```bash
++chmod +x install_mercadopago.sh
++./install_mercadopago.sh
++```
++
++## Configuración
++
++### Configuración de Variables de Entorno
++
++Después de la instalación, es necesario configurar las credenciales de Mercado Pago:
++
++```bash
++# En desarrollo
++docker compose exec app /bin/bash -c 'echo "ENV['"'"'MP_ACCESS_TOKEN'"'"']='"'"'TEST-XXXX'"'"'" >> .env'
++docker compose exec app /bin/bash -c 'echo "ENV['"'"'MP_PUBLIC_KEY'"'"']='"'"'TEST-XXXX'"'"'" >> .env'
++
++# URLs de retorno
++docker compose exec app /bin/bash -c 'echo "ENV['"'"'FRONTEND_URL'"'"']='"'"'http://localhost:5000'"'"'" >> .env'
++docker compose exec app /bin/bash -c 'echo "ENV['"'"'BACKEND_URL'"'"']='"'"'http://localhost:3000'"'"'" >> .env'
++```
++
++
++
++
++prueba1 ---> este tiene las keys de la app de prueba
++user: TESTUSER164815429
++pass: ebaf3282#0c77#4f29#
++
++Comprador 1
++user: TESTUSER552111881
++pass: 5055a234#8eea#4c61#
++
++APP mercado pago qr test user test
++
++public key
++APP_USR-b00061fc-8859-48a1-959c-b64bf7973071
++
++access token
++APP_USR-3664805261955273-032621-c0316d60db47a0fdf814212f8d4c825b-1461279103
++
++
++client id
++3664805261955273
++
++client secret
++uxSz8mIJTJ1vf5BFiPWDuXQftcwcSHTw
++
++### Configuración del Inicializador
++
++El archivo `config/initializers/mercado_pago.rb` contiene la configuración para diferentes entornos. Asegúrate de revisar y ajustar este archivo según sea necesario:
++
++```ruby
++# Configuración de Mercado Pago
++if Rails.env.development? || Rails.env.test?
++  ENV['MP_ACCESS_TOKEN'] ||= 'TEST-XXX' # Reemplazar por token de prueba
++  ENV['MP_PUBLIC_KEY'] ||= 'TEST-XXX' # Reemplazar por public key de prueba
++end
++
++# Configurar URL de retorno para desarrollo
++if Rails.env.development?
++  ENV['FRONTEND_URL'] ||= 'http://localhost:5000'
++  ENV['BACKEND_URL'] ||= 'http://localhost:3000'
++elsif Rails.env.production?
++  ENV['FRONTEND_URL'] ||= 'https://tudominio.com'
++  ENV['BACKEND_URL'] ||= 'https://api.tudominio.com'
++end
++```
++
++## Flujo de Pagos
++
++El flujo de pagos implementado sigue estos pasos:
++
++1. **Creación de Preferencia**:
++   - El usuario completa el formulario de compra
++   - El backend crea una preferencia de pago en Mercado Pago
++   - Se retorna el ID de preferencia y la URL de pago
++
++2. **Proceso de Pago**:
++   - El usuario es redirigido a la página de pago de Mercado Pago
++   - Completa el pago con su método preferido
++
++3. **Notificación y Redirección**:
++   - Mercado Pago notifica al backend a través del webhook
++   - El usuario es redirigido a la página de éxito/fallo/pendiente
++
++4. **Actualización de Estado**:
++   - El backend actualiza el estado de la orden según la notificación
++   - Se activa la membresía si el pago es exitoso
++
++## Webhooks y Notificaciones
++
++El sistema implementa un endpoint de webhook para recibir notificaciones de Mercado Pago:
++
++```
++POST /api/v1/webhook
++```
++
++El webhook procesa los siguientes estados de pago:
++- `approved`: Pago aprobado, se activa la membresía
++- `rejected`: Pago rechazado
++- `pending`: Pago pendiente
++- `in_process`: Pago en proceso
++- `refunded`: Pago reembolsado
++
++Es importante asegurarse de que la URL del webhook sea accesible desde Internet en producción.
++
++## Modelos y Base de Datos
++
++### Order
++
++```ruby
++# == Schema Information
++#
++# Table name: orders
++#
++#  id              :bigint           not null, primary key
++#  uuid            :string           indexed, unique
++#  customer_id     :integer
++#  membership_type :string
++#  amount          :decimal
++#  status          :string
++#  payment_id      :string
++#  created_at      :datetime         not null
++#  updated_at      :datetime         not null
++#
++```
++
++### Customer
++
++```ruby
++# == Schema Information
++#
++# Table name: customers
++#
++#  id          :bigint           not null, primary key
++#  first_name  :string
++#  last_name   :string
++#  email       :string
++#  phone       :string
++#  address     :string
++#  city        :string
++#  province    :string
++#  postal_code :string
++#  created_at  :datetime         not null
++#  updated_at  :datetime         not null
++#
++```
++
++### Membership
++
++```ruby
++# == Schema Information
++#
++# Table name: memberships
++#
++#  id              :bigint           not null, primary key
++#  order_id_id     :bigint           indexed
++#  customer_id_id  :bigint           indexed
++#  membership_type :string
++#  status          :string
++#  start_date      :datetime
++#  end_date        :datetime
++#  created_at      :datetime         not null
++#  updated_at      :datetime         not null
++#
++```
++
++## Pruebas y Testing
++
++### Tarjetas de Prueba
++
++Para probar la integración en ambiente de desarrollo, utiliza estas tarjetas de prueba:
++
++| Tipo | Número | CVV | Fecha de Vencimiento |
++|------|--------|-----|----------------------|
++| VISA | 4509 9535 6623 3704 | 123 | 11/25 |
++| MASTERCARD | 5031 7557 3453 0604 | 123 | 11/25 |
++
++Para simular diferentes resultados:
++- **Aprobación**: Usa cualquier documento válido
++- **Rechazo**: Usa el documento 12345678
++
++### Flujo de Prueba
++
++1. Iniciar el servidor en desarrollo:
++```bash
++docker compose up
++```
++
++2. Acceder a la página de checkout
++
++3. Completar el formulario y enviar
++
++4. Confirmar que la redirección a Mercado Pago funciona correctamente
++
++5. Realizar un pago de prueba con las tarjetas de test
++
++6. Verificar que el webhook recibe la notificación (revisar logs)
++
++7. Confirmar que la orden se actualiza en la base de datos
++
++### Logs y Depuración
++
++Para ver los logs durante las pruebas:
++
++```bash
++docker compose logs -f app
++```
++
++Verifica especialmente los logs cuando ocurren notificaciones de webhook.
++
++## Solución de Problemas
++
++### Problemas Comunes
++
++1. **Webhook no recibe notificaciones**:
++   - Verifica que la URL sea accesible públicamente
++   - Usa ngrok para exponer temporalmente tu localhost
++   - Revisa los logs de Mercado Pago en su panel de desarrollador
++
++2. **Error en la creación de preferencia**:
++   - Verifica las credenciales de API
++   - Asegúrate de usar el token correcto para el entorno (test/prod)
++
++3. **Migraciones fallidas**:
++   - Ejecuta manualmente:
++   ```bash
++   docker compose exec app bundle exec bin/rails db:migrate:status
++   docker compose exec app bundle exec bin/rails db:migrate
++   ```
++
++4. **Error en la activación de membresía**:
++   - Verifica la lógica en el método `activate_membership`
++   - Revisa los logs para errores específicos
++
++### Depuración del Webhook
++
++Para depurar problemas con el webhook, agrega logs temporales:
++
++```ruby
++# En el método webhook del PaymentsController
++Rails.logger.info "Webhook recibido: #{params.inspect}"
++```
++
++Puedes utilizar herramientas como RequestBin o ngrok para inspeccionar las notificaciones recibidas.
++
++## Referencias
++
++- [Documentación oficial de Mercado Pago](https://www.mercadopago.com.ar/developers/es/docs/checkout-api/landing)
++- [Referencia de la API de Preferencias](https://www.mercadopago.com.ar/developers/es/reference/preferences/_checkout_preferences/post)
++- [Webhooks y notificaciones](https://www.mercadopago.com.ar/developers/es/docs/notifications/webhooks)
+\ No newline at end of file
+diff --git a/app/controllers/api/v1/payments_controller.rb b/app/controllers/api/v1/payments_controller.rb
+new file mode 100644
+index 0000000..048e785
+--- /dev/null
++++ b/app/controllers/api/v1/payments_controller.rb
+@@ -0,0 +1,229 @@
++# frozen_string_literal: true
++
++module Api
++  module V1
++    class PaymentsController < ApplicationController
++      require 'mercadopago'
++      require 'securerandom'
++      
++      # En tu PaymentsController
++      skip_before_action :verify_authenticity_token, only: [:webhook, :create_preference]
++      after_action :set_cors_headers
++      # # Manejo de solicitudes OPTIONS
++      # def options
++      #   head :ok
++      # end
++      
++      def create_preference
++
++        # Manejar las solicitudes OPTIONS preflight
++        if request.method == "OPTIONS"
++          return head :ok
++        end
++
++        # Obtiene los datos del formulario
++        membership_type = params[:membershipType]
++        first_name = params[:firstName]
++        last_name = params[:lastName]
++        email = params[:email]
++        phone = params[:phone]
++        address = params[:address]
++        city = params[:city]
++        province = params[:province]
++        postal_code = params[:postalCode]
++        
++        # Genera un ID único para la orden
++        order_id = SecureRandom.uuid
++        
++        # Obtiene los detalles de la membresía
++        membership = get_membership_details(membership_type)
++        
++        # Crea la orden en la base de datos
++        customer = Customer.create!(
++          first_name: first_name,
++          last_name: last_name,
++          email: email,
++          phone: phone,
++          address: address,
++          city: city,
++          province: province,
++          postal_code: postal_code
++        )
++        
++        order = Order.create!(
++          uuid: order_id,
++          customer_id: customer.id,
++          membership_type: membership_type,
++          status: 'pending',
++          amount: membership[:price]
++        )
++        
++        # Configura el SDK de Mercado Pago
++        sdk = Mercadopago::SDK.new(ENV['MP_ACCESS_TOKEN'])
++
++        # Crea la preferencia
++        preference_data = {
++          items: [
++            {
++              id: membership_type,
++              title: "Membresía #{membership[:name]}",
++              description: "Membresía #{membership[:name]} - Quiero Recordarte",
++              unit_price: membership[:price],
++              quantity: 1,
++              currency_id: "ARS"
++            }
++          ],
++          payer: {
++            name: first_name,
++            surname: last_name,
++            email: email,
++            phone: {
++              number: phone
++            },
++            address: {
++              street_name: address,
++              zip_code: postal_code
++            }
++          },
++          # URLs de retorno después del pago
++          back_urls: {
++            success: "#{ENV['FRONTEND_URL']}/success?order_id=#{order_id}",
++            failure: "#{ENV['FRONTEND_URL']}/failure?order_id=#{order_id}",
++            pending: "#{ENV['FRONTEND_URL']}/pending?order_id=#{order_id}"
++          },
++          auto_return: "approved",
++          # Referencia externa para asociar esta preferencia con tu orden
++          external_reference: order_id,
++          # Notificación de webhook
++          notification_url: "#{ENV['BACKEND_URL']}/api/v1/webhook"
++        }
++        
++        # Crea la preferencia en Mercado Pago
++        preference_response = sdk.preference.create(preference_data)
++        
++        # Verifica la respuesta
++        if preference_response[:status] >= 200 and preference_response[:status] < 300
++          # Devuelve los datos necesarios al frontend
++          render json: {
++            id: preference_response[:response]['id'],
++            init_point: preference_response[:response]['init_point'],
++            orderId: order_id
++          }
++        else
++          # Maneja el error
++          render json: { error: 'Error al crear la preferencia de pago', 
++                          message: preference_response[:response]
++          }, status: :unprocessable_entity
++        end
++      end
++      
++      # Acción para recibir webhooks de Mercado Pago
++      def webhook
++        # Verifica la autenticidad de la notificación
++        if params[:type] == "payment"
++          payment_id = params[:data][:id]
++          
++          # Configura el SDK de Mercado Pago
++          sdk = Mercadopago::SDK.new(ENV['MP_ACCESS_TOKEN'])
++          
++          # Obtiene la información del pago
++          payment_response = sdk.payment.get(payment_id)
++          
++          if payment_response[:status] >= 200 and payment_response[:status] < 300
++            payment_info = payment_response[:response]
++            external_reference = payment_info['external_reference']
++            status = payment_info['status']
++            
++            # Encuentra la orden correspondiente
++            order = Order.find_by(uuid: external_reference)
++            
++            if order
++              # Actualiza el estado de la orden según el estado del pago
++              case status
++              when "approved"
++                order.update(status: "completed", payment_id: payment_id)
++                # Activa la membresía
++                activate_membership(order)
++                # Envía email de confirmación
++                # PaymentMailer.payment_approved(order).deliver_later
++              when "rejected"
++                order.update(status: "rejected", payment_id: payment_id)
++                # PaymentMailer.payment_rejected(order).deliver_later
++              when "pending"
++                order.update(status: "pending", payment_id: payment_id)
++                # PaymentMailer.payment_pending(order).deliver_later
++              when "in_process"
++                order.update(status: "in_process", payment_id: payment_id)
++              when "refunded"
++                order.update(status: "refunded", payment_id: payment_id)
++                # PaymentMailer.payment_refunded(order).deliver_later
++              end
++            end
++          end
++        end
++        
++        # Siempre responde con 200 OK para confirmar la recepción
++        head :ok
++      end
++      
++      # Acción para obtener el estado de una orden
++      def order_status
++        order = Order.find_by(uuid: params[:id])
++        
++        if order
++          render json: {
++            id: order.uuid,
++            status: order.status,
++            membership_type: order.membership_type,
++            created_at: order.created_at
++          }
++        else
++          render json: { error: 'Orden no encontrada' }, status: :not_found
++        end
++      end
++      
++      private
++      
++      def set_cors_headers
++        headers['Access-Control-Allow-Origin'] = '*'
++        headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
++        headers['Access-Control-Allow-Headers'] = '*'
++        headers['Access-Control-Max-Age'] = '86400'
++      end
++
++      # Método para obtener detalles de la membresía
++      def get_membership_details(membership_type)
++        memberships = {
++          'acompanandote' => {
++            name: 'Acompañandote',
++            price: 12,
++          },
++          'recordandote' => {
++            name: 'Recordandote',
++            price: 15,
++          },
++          'siempre' => {
++            name: 'Siempre Juntos',
++            price: 18,
++          }
++        }
++        
++        memberships[membership_type] || memberships['acompanandote']
++      end
++      
++      # Método para activar la membresía
++      def activate_membership(order)
++        # Implementa la lógica para activar la membresía
++        # Por ejemplo, crear un registro en una tabla de membresías activas
++        Membership.create!(
++          order_id: order.id,
++          customer_id: order.customer_id,
++          membership_type: order.membership_type,
++          status: 'active',
++          start_date: Time.current,
++          end_date: Time.current + 1.year # Asumiendo que la membresía dura 1 año
++        )
++      end
++    end
++  end
++end
+diff --git a/app/controllers/application_controller.rb b/app/controllers/application_controller.rb
+index 633c06e..327825b 100644
+--- a/app/controllers/application_controller.rb
++++ b/app/controllers/application_controller.rb
+@@ -1,6 +1,7 @@
+ class ApplicationController < ActionController::Base
+-  before_action :authenticate_user!
+-  before_action :allow_only_user!
++  before_action :authenticate_user!, unless: :api_payment_request?
++  before_action :allow_only_user!, unless: :api_payment_request?
++  
+ 
+   def after_sign_in_path_for(resource)
+     if resource.is_a?(User) && resource.admin?
+@@ -19,4 +20,9 @@ class ApplicationController < ActionController::Base
+   def allow_only_user!
+     redirect_to admin_root_path if !devise_controller? && current_user.admin?
+   end
+-end
++  
++  # Método para determinar si la solicitud es a los endpoints de pago de la API
++  def api_payment_request?
++    request.path.start_with?('/api/v1/webhook', '/api/v1/create-preference', '/api/v1/orders/')
++  end
++end
+\ No newline at end of file
+diff --git a/app/models/customer.rb b/app/models/customer.rb
+new file mode 100644
+index 0000000..0b52773
+--- /dev/null
++++ b/app/models/customer.rb
+@@ -0,0 +1,2 @@
++class Customer < ApplicationRecord
++end
+diff --git a/app/models/membership.rb b/app/models/membership.rb
+new file mode 100644
+index 0000000..ed36026
+--- /dev/null
++++ b/app/models/membership.rb
+@@ -0,0 +1,4 @@
++class Membership < ApplicationRecord
++  belongs_to :order_id
++  belongs_to :customer_id
++end
+diff --git a/app/models/order.rb b/app/models/order.rb
+new file mode 100644
+index 0000000..10281b3
+--- /dev/null
++++ b/app/models/order.rb
+@@ -0,0 +1,2 @@
++class Order < ApplicationRecord
++end
+diff --git a/config/environments/development.rb b/config/environments/development.rb
+index 5ce32c5..8f4e828 100644
+--- a/config/environments/development.rb
++++ b/config/environments/development.rb
+@@ -82,4 +82,7 @@ Rails.application.configure do
+   config.action_controller.raise_on_missing_callback_actions = true
+ 
+   config.web_console.permissions = '172.19.0.0/16'
++  config.hosts << "a42c-2802-8010-8213-de00-ddbc-1d3-6273-b1a8.ngrok-free.app"
++  config.hosts << "localhost:5501"
++  
+ end
+diff --git a/config/initializers/mercado_pago.rb b/config/initializers/mercado_pago.rb
+new file mode 100644
+index 0000000..7fe5440
+--- /dev/null
++++ b/config/initializers/mercado_pago.rb
+@@ -0,0 +1,16 @@
++# frozen_string_literal: true
++
++# Configuración de Mercado Pago
++if Rails.env.development? || Rails.env.test?
++  ENV['MP_ACCESS_TOKEN'] ||= 'APP_USR-3664805261955273-032621-c0316d60db47a0fdf814212f8d4c825b-1461279103' # Reemplazar por token de prueba
++  ENV['MP_PUBLIC_KEY'] ||= 'APP_USR-b00061fc-8859-48a1-959c-b64bf7973071' # Reemplazar por public key de prueba
++end
++
++# Configurar URL de retorno para desarrollo
++if Rails.env.development?
++  ENV['FRONTEND_URL'] ||= 'http://localhost:5501'
++  ENV['BACKEND_URL'] ||= 'https://a42c-2802-8010-8213-de00-ddbc-1d3-6273-b1a8.ngrok-free.app' #podemos usar ngrok
++elsif Rails.env.production?
++  ENV['FRONTEND_URL'] ||= 'https://tudominio.com'
++  ENV['BACKEND_URL'] ||= 'https://api.tudominio.com'
++end
+diff --git a/config/routes.rb b/config/routes.rb
+index 414ff28..c4c0c6a 100644
+--- a/config/routes.rb
++++ b/config/routes.rb
+@@ -15,6 +15,15 @@ Rails.application.routes.draw do
+     root 'dashboard#index'
+   end
+ 
++  # API para pagos
++  namespace :api do
++    namespace :v1 do
++      match '/create-preference', to: 'payments#create_preference', via: %i[post options]
++      post '/webhook', to: 'payments#webhook'
++      get '/orders/:id', to: 'payments#order_status'
++    end
++  end
++
+   # Defines the root path route ("/")
+   root 'home#index'
+ end
+diff --git a/db/migrate/20250324132833_create_orders.rb b/db/migrate/20250324132833_create_orders.rb
+new file mode 100644
+index 0000000..3253d9b
+--- /dev/null
++++ b/db/migrate/20250324132833_create_orders.rb
+@@ -0,0 +1,15 @@
++class CreateOrders < ActiveRecord::Migration[7.1]
++  def change
++    create_table :orders do |t|
++      t.string :uuid
++      t.integer :customer_id
++      t.string :membership_type
++      t.decimal :amount
++      t.string :status
++      t.string :payment_id
++
++      t.timestamps
++    end
++    add_index :orders, :uuid, unique: true
++  end
++end
+diff --git a/db/migrate/20250324132836_create_customers.rb b/db/migrate/20250324132836_create_customers.rb
+new file mode 100644
+index 0000000..b53d034
+--- /dev/null
++++ b/db/migrate/20250324132836_create_customers.rb
+@@ -0,0 +1,16 @@
++class CreateCustomers < ActiveRecord::Migration[7.1]
++  def change
++    create_table :customers do |t|
++      t.string :first_name
++      t.string :last_name
++      t.string :email
++      t.string :phone
++      t.string :address
++      t.string :city
++      t.string :province
++      t.string :postal_code
++
++      t.timestamps
++    end
++  end
++end
+diff --git a/db/migrate/20250324132838_create_memberships.rb b/db/migrate/20250324132838_create_memberships.rb
+new file mode 100644
+index 0000000..6d767fb
+--- /dev/null
++++ b/db/migrate/20250324132838_create_memberships.rb
+@@ -0,0 +1,14 @@
++class CreateMemberships < ActiveRecord::Migration[7.1]
++  def change
++    create_table :memberships do |t|
++      t.references :order_id, null: false, foreign_key: true
++      t.references :customer_id, null: false, foreign_key: true
++      t.string :membership_type
++      t.string :status
++      t.datetime :start_date
++      t.datetime :end_date
++
++      t.timestamps
++    end
++  end
++end
+diff --git a/db/schema.rb b/db/schema.rb
+index f8330d2..7928835 100644
+--- a/db/schema.rb
++++ b/db/schema.rb
+@@ -10,7 +10,7 @@
+ #
+ # It's strongly recommended that you check this file into your version control system.
+ 
+-ActiveRecord::Schema[7.1].define(version: 2025_02_20_181227) do
++ActiveRecord::Schema[7.1].define(version: 2025_03_24_132838) do
+   create_table "active_storage_attachments", force: :cascade do |t|
+     t.string "name", null: false
+     t.string "record_type", null: false
+@@ -39,6 +39,32 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_20_181227) do
+     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+   end
+ 
++  create_table "customers", force: :cascade do |t|
++    t.string "first_name"
++    t.string "last_name"
++    t.string "email"
++    t.string "phone"
++    t.string "address"
++    t.string "city"
++    t.string "province"
++    t.string "postal_code"
++    t.datetime "created_at", null: false
++    t.datetime "updated_at", null: false
++  end
++
++  create_table "memberships", force: :cascade do |t|
++    t.integer "order_id_id", null: false
++    t.integer "customer_id_id", null: false
++    t.string "membership_type"
++    t.string "status"
++    t.datetime "start_date"
++    t.datetime "end_date"
++    t.datetime "created_at", null: false
++    t.datetime "updated_at", null: false
++    t.index ["customer_id_id"], name: "index_memberships_on_customer_id_id"
++    t.index ["order_id_id"], name: "index_memberships_on_order_id_id"
++  end
++
+   create_table "memorials", force: :cascade do |t|
+     t.integer "user_id", null: false
+     t.date "dob"
+@@ -53,6 +79,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_20_181227) do
+     t.index ["user_id"], name: "index_memorials_on_user_id"
+   end
+ 
++  create_table "orders", force: :cascade do |t|
++    t.string "uuid"
++    t.integer "customer_id"
++    t.string "membership_type"
++    t.decimal "amount"
++    t.string "status"
++    t.string "payment_id"
++    t.datetime "created_at", null: false
++    t.datetime "updated_at", null: false
++    t.index ["uuid"], name: "index_orders_on_uuid", unique: true
++  end
++
+   create_table "promotional_campaigns", force: :cascade do |t|
+     t.string "name", null: false
+     t.string "utm_campaign", null: false
+@@ -101,5 +139,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_20_181227) do
+ 
+   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
++  add_foreign_key "memberships", "customers", column: "customer_id_id"
++  add_foreign_key "memberships", "orders", column: "order_id_id"
+   add_foreign_key "memorials", "users"
+ end
+diff --git a/spec/models/customer_spec.rb b/spec/models/customer_spec.rb
+new file mode 100644
+index 0000000..3399b1f
+--- /dev/null
++++ b/spec/models/customer_spec.rb
+@@ -0,0 +1,5 @@
++require 'rails_helper'
++
++RSpec.describe Customer, type: :model do
++  pending "add some examples to (or delete) #{__FILE__}"
++end
+diff --git a/spec/models/membership_spec.rb b/spec/models/membership_spec.rb
+new file mode 100644
+index 0000000..de31608
+--- /dev/null
++++ b/spec/models/membership_spec.rb
+@@ -0,0 +1,5 @@
++require 'rails_helper'
++
++RSpec.describe Membership, type: :model do
++  pending "add some examples to (or delete) #{__FILE__}"
++end
+diff --git a/spec/models/order_spec.rb b/spec/models/order_spec.rb
+new file mode 100644
+index 0000000..f48229a
+--- /dev/null
++++ b/spec/models/order_spec.rb
+@@ -0,0 +1,5 @@
++require 'rails_helper'
++
++RSpec.describe Order, type: :model do
++  pending "add some examples to (or delete) #{__FILE__}"
++end

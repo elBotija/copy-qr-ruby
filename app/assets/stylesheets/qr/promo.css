@@ -1,0 +1,229 @@
+body.bg-body-tertiary {
+  background-color: #00524b !important;
+  padding:0 !important;
+  margin: 0;
+  padding: 10px;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+.navbar {
+  background-color: white;
+}
+
+.controls {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+select, input, button {
+  padding: 8px 12px;
+  border: 2px solid white;
+  border-radius: 4px;
+  background: transparent;
+  color: white;
+  font-size: 16px;
+}
+
+input[type="url"], input[type="text"] {
+  min-width: 300px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+input[type="number"] {
+  width: 80px;
+}
+
+button {
+  background-color: white;
+  color: #00524b;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #e0e0e0;
+}
+
+label {
+  color: white;
+  font-size: 16px;
+}
+
+#qrs-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  width: 100%;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 5px;
+}
+
+.qr-container-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #00524b;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.qr-container {
+  text-align: center;
+  position: relative;
+  background-color: #00524b;
+  padding: 20px 20px 0 20px;
+  margin-bottom: 2px;
+}
+
+canvas {
+  background: white;
+  border-radius: 5px;
+  padding: 5px;
+  box-sizing: content-box;
+}
+
+.qr-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 30%;
+  height: auto;
+  background: white;
+  padding: 5px;
+}
+@font-face {
+  font-family: 'Winter Beauty';
+  src: url('winterbeauty-Script.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.qr-footer {
+  color: white;
+  padding-top: .2rem;
+  font-size: 1.8rem;
+  font-family: 'Winter Beauty', sans-serif;
+}
+
+@page {
+  size: A4;
+  margin: 0;
+  background-color: #00524b;
+}
+
+@media print {
+  .controls {
+      display: none;
+  }
+
+  html, body {
+      background-color: #00524b !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+      width: 210mm;
+      height: 297mm;
+      margin: 0;
+      padding: 5px;
+  }
+
+  #qrs-container {
+      background-color: #00524b !important;
+      grid-template-rows: repeat(3, 1fr);
+      height: calc(100% - 10px);
+      gap: 10px;
+      padding: 5px;
+  }
+
+  .qr-container-wrapper {
+      background-color: #00524b !important;
+      page-break-inside: avoid;
+      break-inside: avoid;
+      height: auto;
+  }
+
+  .qr-container {
+      background-color: #00524b !important;
+      padding: 20px 20px 0 20px;
+  }
+
+  canvas {
+      background: white !important;
+      padding: 5px !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+  }
+
+  .qr-footer {
+      color: white !important;
+  }
+
+  .qr-container-wrapper:nth-child(6) {
+      page-break-after: always;
+      break-after: page;
+  }
+}
+
+.campaigns-list {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.campaigns-list h2 {
+  color: white;
+  margin-bottom: 20px;
+}
+
+.campaigns-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: white;
+}
+
+.campaigns-table th,
+.campaigns-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.campaigns-table th {
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.campaigns-table tr.inactive {
+  opacity: 0.6;
+}
+
+.campaigns-table button {
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+@media print {
+  .campaigns-list {
+    display: none;
+  }
+  .navbar{
+    display: none !important;
+  }
+}

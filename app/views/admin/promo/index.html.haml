@@ -1,0 +1,55 @@
+- content_for :head do
+  = stylesheet_link_tag "qr/promo", media: 'all', 'data-turbo-track': 'reload'
+  = javascript_include_tag "qr/lib", 'data-turbo-track': 'reload'
+  = javascript_include_tag "qr/promo", 'data-turbo-track': 'reload'
+
+.controls
+  .control-group
+    %label{for: "campaign-name"} Nombre de Campaña:
+    %input#campaign-name{type: "text", placeholder: "Ej: Campaña Verano 2025", required: true}
+
+  .control-group
+    %label{for: "utm-campaign"} Campaña UTM:
+    %input#utm-campaign{type: "text", placeholder: "promocion_verano", required: true}
+  
+  .control-group
+    %label{for: "qrCount"} Cantidad:
+    %input#qrCount{type: "number", value: "12", min: "1", max: "100"}
+
+  .control-group
+    %label{for: "start-date"} Fecha Inicio:
+    %input#start-date{type: "date"}
+
+  .control-group
+    %label{for: "end-date"} Fecha Fin:
+    %input#end-date{type: "date"}
+  
+  .control-group
+    %button{onclick: "generateAndSaveCampaign()"} Crear Campaña
+    %button{onclick: "window.print()"} Guardar PDF
+
+.campaigns-list
+  %h2 Campañas Activas
+  %table.campaigns-table
+    %thead
+      %tr
+        %th Nombre
+        %th UTM Campaña
+        %th QRs
+        %th Fecha Inicio
+        %th Fecha Fin
+        %th Estado
+        %th Acciones
+    %tbody
+      - @campaigns.each do |campaign|
+        %tr{class: campaign.active ? 'active' : 'inactive'}
+          %td= campaign.name
+          %td= campaign.utm_campaign
+          %td= campaign.qr_count
+          %td= campaign.start_date&.strftime('%d/%m/%Y')
+          %td= campaign.end_date&.strftime('%d/%m/%Y')
+          %td= campaign.active ? 'Activa' : 'Inactiva'
+          %td
+            %button{onclick: "regenerateQRs(#{campaign.id})"} Mostrar QRs
+
+#qrs-container

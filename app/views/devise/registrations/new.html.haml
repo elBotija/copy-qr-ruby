@@ -1,0 +1,47 @@
+%main.form-signup.w-100.m-auto.bg-white.rounded-3.shadow-lg.p-4.d-flex.flex-wrap.justify-center
+  = image_tag 'logo-login.png', class: 'mb-2', height: '100%', width: '100%'
+
+  %div.w-100
+    %h1.h3.mb-3.fw-normal= t('.sign_up')
+
+    = form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
+      = render 'devise/shared/error_messages', resource: resource
+
+      .form-floating
+        = f.email_field :email,
+          class: 'form-control',
+          placeholder: 'nombre@ejemplo.com',
+          required: true,
+          autocomplete: 'email'
+        = f.label :email
+
+      .form-floating
+        = f.password_field :password,
+          class: 'form-control',
+          placeholder: t('.password'),
+          required: true,
+          autocomplete: 'new-password',
+          minlength: @minimum_password_length || 6
+        = f.label :password
+
+      .form-floating
+        = f.password_field :password_confirmation,
+          class: 'form-control',
+          placeholder: t('.password_confirmation'),
+          required: true,
+          autocomplete: 'new-password',
+          minlength: @minimum_password_length || 6
+        = f.label :password_confirmation
+
+      .form-check.text-start.mt-3
+        = f.check_box :terms_of_service, class: 'form-check-input'
+        = f.label :terms_of_service, class: 'form-check-label small' do
+          = link_to t('.accept_terms_of_service'),
+            'https://www.quiero-recordarte.com.ar/terminos-y-condiciones',
+            rel: 'noopener noreferrer',
+            target: '_blank'
+
+      .actions.mt-3
+        = f.submit t('.sign_up'), class: 'btn btn-primary w-100 py-2'
+
+    .mt-3= render 'devise/shared/links'

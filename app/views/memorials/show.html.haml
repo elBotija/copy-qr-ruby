@@ -1,0 +1,52 @@
+- content_for :head do
+  = javascript_include_tag "https://cdn.tailwindcss.com", 'data-turbo-track': 'reload'
+
+%section.my-0.py-0
+  - if @memorial.hero_image.attached?
+    - hero_image = url_for(@memorial.hero_image)
+  - else
+    - hero_image = 'https://placehold.co/2000x1000'
+  .w-full.bg-cover.bg-center.bg-top.bg-no-repeat{class: "h-[60vh]", style: "background-image: url('#{hero_image}')"}
+  .flex.flex-wrap.justify-center.md:justify-normal.items-center.md:items-end.gap-4.pb-12.-mt-40.md:-mt-8.md:mx-40{class: "md:!flex-nowrap"}
+    - if @memorial.profile_image.attached?
+      - profile_image = url_for(@memorial.profile_image)
+    - else
+      - profile_image = 'https://placehold.co/576'
+    .overflow-hidden.shadow-md.bg-cover.bg-center.bg-top.bg-no-repeat{class: "!min-w-[18rem] !min-h-[18rem] !max-w-[18rem] !max-h-[18rem] rounded-[100%]", style: "background-image: url('#{profile_image}')"}
+
+    .px-4.md:px-0.font-montserrat{class: "text-[#56664B]"}
+      %h2.text-4xl.uppercase{class: "font-[500]"}
+        = @memorial.full_name
+      %span.text-3xl 1990-2024
+      -# %p.text-3xl{class: "font-[300]"} Cementerio de la Chacarita
+      -# %p.text-xl{class: "font-[300]"}
+      -#   %i.fas.fa-map-pin.pr-1
+      -#   Secci&#xF3;n 2, Manzana 9, Tabl&#xF3;n 13
+      -# %p.text-lg{class: "font-[300]"}
+      -#   %i.fas.fa-map-marker-alt.pr-0
+      -#   Av. Guzm&#xE1;n 680, C1427 Cdad. Aut&#xF3;noma de Buenos Aires
+      %p.text-xl{class: "font-[400]"}
+        = @memorial.caption
+
+%section.my-0.text-white.px-4.md:px-40.pt-12.pb-14.font-montserrat{class: "bg-[#8B6951]"}
+  %h2.text-4xl.md:text-5xl.text-center.pb-6{class: "font-[300]"} Historia
+  %p.text-xl.border-t.border-b.py-4.leading-8{class: "font-[300]"}
+    = @memorial.bio
+
+%section.my-0.px-4.pt-12.pb-14.font-montserrat{class: "bg-[#97A886] text-[#333333] md:px-40"}
+  %h2.text-4xl.text-center.pb-6{class: "md:text-5xl font-[300]"} Momentos
+  .border-t.border-b.py-4{class: "border-[#333333]"}
+    .gallery-container{'x-data': {
+      photos: @memorial.photos,
+      lightboxOpen: false,
+      currentIndex: 0
+    }}
+
+      / Galería
+      .max-w-6xl.mx-auto
+        .grid.grid-cols-1.gap-8{class: "md:grid-cols-2"}
+          - @memorial.photos.each_with_index do |photo, index|
+            .space-y-3
+              .image-container{ '@click': "lightboxOpen = true; currentIndex = #{index}"}
+                %img.w-full.h-72.object-cover.cursor-pointer.rounded-lg{ src: url_for(photo) }
+                

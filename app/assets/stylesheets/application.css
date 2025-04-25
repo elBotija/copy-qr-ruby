@@ -1,0 +1,14 @@
+@import 'tailwind';
+
+html, body {
+  height: 100%;
+}
+
+.field_with_errors {
+  padding: 2px;
+  background-color: red;
+}
+
+.font-montserrat{
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}

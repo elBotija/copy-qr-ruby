@@ -1,0 +1,18 @@
+%main.form-unlock.w-100.m-auto
+  = form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f|
+    = image_tag 'logo-login.png', class: 'mb-2', height: '100%', width: '100%'
+    %h1.h3.mb-3.fw-normal= t('.resend_unlock_instructions')
+    = render 'devise/shared/error_messages', resource: resource
+
+    .form-floating
+      = f.email_field :email,
+        class: 'form-control',
+        placeholder: 'nombre@ejemplo.com',
+        required: true,
+        autocomplete: 'email'
+      = f.label :email
+
+    .actions.mt-3
+      = f.submit t('.resend_instructions'), class: 'btn btn-primary w-100 py-2'
+
+  .mt-3= render 'devise/shared/links'
