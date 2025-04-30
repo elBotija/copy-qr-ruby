@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_24_132838) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_28_212411) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -53,16 +53,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_24_132838) do
   end
 
   create_table "memberships", force: :cascade do |t|
-    t.integer "order_id_id", null: false
-    t.integer "customer_id_id", null: false
+    t.integer "order_id", null: false
+    t.integer "customer_id", null: false
     t.string "membership_type"
     t.string "status"
     t.datetime "start_date"
     t.datetime "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["customer_id_id"], name: "index_memberships_on_customer_id_id"
-    t.index ["order_id_id"], name: "index_memberships_on_order_id_id"
+    t.index ["customer_id"], name: "index_memberships_on_customer_id"
+    t.index ["order_id"], name: "index_memberships_on_order_id"
   end
 
   create_table "memorials", force: :cascade do |t|
@@ -114,6 +114,24 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_24_132838) do
     t.index ["code"], name: "index_qr_codes_on_code", unique: true
   end
 
+  create_table "shipping_infos", force: :cascade do |t|
+    t.integer "order_id", null: false
+    t.string "tracking_code"
+    t.string "carrier_name"
+    t.string "status", default: "pending"
+    t.date "shipped_date"
+    t.date "estimated_delivery_date"
+    t.text "notes"
+    t.string "invoice_filename"
+    t.boolean "invoice_sent", default: false
+    t.boolean "tracking_notification_sent", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "invoice_number"
+    t.date "invoice_date"
+    t.index ["order_id"], name: "index_shipping_infos_on_order_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -139,7 +157,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_24_132838) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "memberships", "customers", column: "customer_id_id"
-  add_foreign_key "memberships", "orders", column: "order_id_id"
+  add_foreign_key "memberships", "customers"
+  add_foreign_key "memberships", "customers"
+  add_foreign_key "memberships", "orders"
+  add_foreign_key "memberships", "orders"
   add_foreign_key "memorials", "users"
+  add_foreign_key "shipping_infos", "orders"
 end

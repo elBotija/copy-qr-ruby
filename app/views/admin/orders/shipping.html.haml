@@ -1,0 +1,111 @@
+%h1.mb-4 
+  Gestionar Envío - Orden
+  = @order.uuid
+
+.mb-3
+  = link_to 'Volver a la lista', admin_orders_path, class: 'btn btn-outline-secondary'
+  = link_to 'Ver detalles', admin_order_path(@order), class: 'btn btn-info ms-2'
+
+- if @order.status == 'completed'
+  .row
+    .col-md-7
+      .card.mb-4
+        .card-header
+          %h5 Información de Envío
+        .card-body
+          = form_with(model: @order, url: shipping_admin_order_path(@order), method: :patch) do |f|
+            = f.fields_for :shipping_info do |s|
+              .row
+                .col-md-6
+                  .mb-3
+                    = s.label :status, 'Estado del envío', class: 'form-label'
+                    = s.select :status, ShippingInfo::STATUSES.map { |k, v| [v, k] }, {}, class: 'form-select'
+                  
+                  .mb-3
+                    = s.label :carrier_name, 'Empresa de transporte', class: 'form-label'
+                    = s.text_field :carrier_name, class: 'form-control'
+                  
+                  .mb-3
+                    = s.label :tracking_code, 'Código de seguimiento', class: 'form-label'
+                    = s.text_field :tracking_code, class: 'form-control'
+
+                .col-md-6
+                  .mb-3
+                    = s.label :shipped_date, 'Fecha de envío', class: 'form-label'
+                    = s.date_field :shipped_date, class: 'form-control'
+                  
+                  .mb-3
+                    = s.label :estimated_delivery_date, 'Fecha estimada de entrega', class: 'form-label'
+                    = s.date_field :estimated_delivery_date, class: 'form-control'
+              
+              .mb-3
+                = s.label :notes, 'Notas', class: 'form-label'
+                = s.text_area :notes, class: 'form-control', rows: 3
+
+              %hr
+
+              %h5.mb-3 Notificaciones
+
+              .row
+                .col-md-6
+                  .mb-3
+                    .form-check.form-switch
+                      = s.check_box :tracking_notification_sent, class: 'form-check-input'
+                      = s.label :tracking_notification_sent, 'Notificación de envío enviada', class: 'form-check-label'
+                      %small.form-text.text-muted Marca esta opción si ya se ha enviado la notificación de seguimiento al cliente.
+                
+                .col-md-6
+                  .mb-3
+                    .form-check.form-switch
+                      = s.check_box :invoice_sent, class: 'form-check-input'
+                      = s.label :invoice_sent, 'Factura enviada', class: 'form-check-label'
+                      %small.form-text.text-muted Marca esta opción si ya se ha enviado la factura al cliente.
+
+            .mb-3
+              = f.submit 'Actualizar Información de Envío', class: 'btn btn-primary'
+    
+    .col-md-5
+      .card
+        .card-header
+          %h5 Gestión de Factura
+        .card-body
+          - if @order.shipping_info&.invoice_filename.present?
+            .alert.alert-success.mb-3
+              %h6 Factura cargada
+              %p
+                %strong Número: 
+                = @order.shipping_info.invoice_number
+                %br
+                %strong Fecha: 
+                = @order.shipping_info.invoice_date&.strftime('%d/%m/%Y')
+                %br
+                %strong Archivo: 
+                = @order.shipping_info.invoice_filename
+                %br
+                %strong Estado: 
+                - if @order.shipping_info.invoice_sent
+                  %span.badge.bg-success Enviada
+                - else
+                  %span.badge.bg-warning No enviada
+            
+            .d-flex.gap-2
+              = link_to download_admin_invoices_path(order_id: @order.id), class: 'btn btn-info', target: '_blank' do
+                %i.bi.bi-file-earmark-pdf
+                Ver factura
+              
+              = link_to admin_invoice_path(order_id: @order.id), data: { turbo_method: :delete, turbo_confirm: '¿Estás seguro? Esta acción eliminará la factura.' }, class: 'btn btn-danger' do
+                %i.bi.bi-trash
+                Eliminar factura
+          - else
+            .alert.alert-info.mb-3 No hay factura cargada para esta orden.
+            = link_to new_admin_invoice_path(order_id: @order.id), class: 'btn btn-primary' do
+              %i.bi.bi-upload
+              Cargar factura
+- else
+  .alert.alert-warning
+    Para gestionar el envío, la orden debe estar en estado "Completado".
+    %br
+    Estado actual: 
+    %span{class: "badge bg-#{order_status_color(@order.status)}"}= @order.status_text
+    %br
+    = link_to 'Cambiar estado de la orden', edit_admin_order_path(@order), class: 'btn btn-sm btn-outline-primary mt-2'

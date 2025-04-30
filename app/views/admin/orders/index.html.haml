@@ -1,0 +1,70 @@
+%h1.mb-4 Administración de Órdenes
+
+.card.mb-4
+  .card-header
+    %h5 Filtros
+  .card-body
+    = form_tag admin_orders_path, method: :get, class: 'row g-3' do
+      .col-md-3
+        = label_tag :status, 'Estado de pago', class: 'form-label'
+        = select_tag :status, options_for_select([['Todos', ''], ['Pendiente', 'pending'], ['Completado', 'completed'], ['Rechazado', 'rejected'], ['En proceso', 'in_process'], ['Reembolsado', 'refunded']], params[:status]), class: 'form-select'
+      
+      .col-md-3
+        = label_tag :shipping_status, 'Estado de envío', class: 'form-label'
+        = select_tag :shipping_status, options_for_select([['Todos', ''], ['Pendiente de envío', 'pending'], ['Enviado', 'shipped'], ['En tránsito', 'in_transit'], ['Entregado', 'delivered'], ['Devuelto', 'returned'], ['Perdido', 'lost']], params[:shipping_status]), class: 'form-select'
+      
+      .col-md-3.d-flex.align-items-end
+        = submit_tag 'Filtrar', class: 'btn btn-primary'
+        - if params[:status].present? || params[:shipping_status].present?
+          = link_to 'Limpiar filtros', admin_orders_path, class: 'btn btn-outline-secondary ms-2'
+
+.card
+  .card-header
+    %h5 Órdenes
+  .card-body
+    - if @orders.any?
+      .table-responsive
+        %table.table.table-striped.table-hover
+          %thead
+            %tr
+              %th ID
+              %th UUID
+              %th Cliente
+              %th Membresía
+              %th Monto
+              %th Estado Pago
+              %th Estado Envío
+              %th Seguimiento
+              %th Fecha
+              %th Acciones
+          %tbody
+            - @orders.each do |order|
+              %tr
+                %td= order.id
+                %td= order.uuid
+                %td= order.customer_full_name
+                %td= order.membership_type
+                %td= number_to_currency(order.amount)
+                %td
+                  %span{class: "badge bg-#{order_status_color(order.status)}"}= order.status_text
+                %td
+                  - if order.shipping_info
+                    %span{class: "badge bg-#{shipping_status_color(order.shipping_info.status)}"}= order.shipping_info.status_text
+                  - else
+                    %span.badge.bg-secondary Sin información
+                %td
+                  - if order.shipping_info&.has_tracking?
+                    %i.bi.bi-check-circle-fill.text-success
+                  - else
+                    %i.bi.bi-x-circle-fill.text-danger
+                %td= order.created_at.strftime('%d/%m/%Y %H:%M')
+                %td
+                  .btn-group
+                    = link_to admin_order_path(order), class: 'btn btn-sm btn-info', title: 'Ver detalles' do
+                      %i.bi.bi-eye
+                    = link_to edit_admin_order_path(order), class: 'btn btn-sm btn-primary', title: 'Editar estado' do
+                      %i.bi.bi-pencil
+                    = link_to shipping_admin_order_path(order), class: 'btn btn-sm btn-success', title: 'Gestionar envío' do
+                      %i.bi.bi-truck
+    - else
+      .alert.alert-info No hay órdenes para mostrar.

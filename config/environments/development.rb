@@ -82,7 +82,7 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   config.web_console.permissions = '172.19.0.0/16'
-  config.hosts << "a42c-2802-8010-8213-de00-ddbc-1d3-6273-b1a8.ngrok-free.app"
+  config.hosts << "9d4d-190-173-170-143.ngrok-free.app"
   config.hosts << "localhost:5501"
   
 end

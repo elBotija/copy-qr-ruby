@@ -1,0 +1,33 @@
+%h1.mb-4 
+  Cargar Factura - Orden
+  = @order.uuid
+
+.mb-3
+  = link_to 'Volver a detalles', admin_order_path(@order), class: 'btn btn-outline-secondary'
+  = link_to 'Gestionar envío', shipping_admin_order_path(@order), class: 'btn btn-success ms-2'
+
+.card
+  .card-header
+    %h5 Cargar factura en PDF
+  .card-body
+    = form_tag admin_invoices_path, multipart: true do
+      = hidden_field_tag :order_id, @order.id
+
+      .row
+        .col-md-6
+          .mb-3
+            = label_tag :invoice_number, 'Número de factura', class: 'form-label'
+            = text_field_tag :invoice_number, '', class: 'form-control', required: true
+        
+        .col-md-6
+          .mb-3
+            = label_tag :invoice_date, 'Fecha de factura', class: 'form-label'
+            = date_field_tag :invoice_date, Date.today, class: 'form-control', required: true
+
+      .mb-3
+        = label_tag :invoice_file, 'Archivo PDF de la factura', class: 'form-label'
+        = file_field_tag :invoice_file, class: 'form-control', accept: 'application/pdf', required: true
+        %small.form-text.text-muted El archivo debe estar en formato PDF.
+
+      .mb-3
+        = submit_tag 'Cargar Factura', class: 'btn btn-primary'

@@ -1,0 +1,19 @@
+%h1.mb-4 
+  Editar Orden
+  = @order.uuid
+
+.mb-3
+  = link_to 'Volver a la lista', admin_orders_path, class: 'btn btn-outline-secondary'
+  = link_to 'Ver detalles', admin_order_path(@order), class: 'btn btn-info ms-2'
+
+.card
+  .card-header
+    %h5 Actualizar Estado
+  .card-body
+    = form_with(model: @order, url: admin_order_path(@order), method: :patch) do |f|
+      .mb-3
+        = f.label :status, 'Estado', class: 'form-label'
+        = f.select :status, [['Pendiente', 'pending'], ['Completado', 'completed'], ['Rechazado', 'rejected'], ['En proceso', 'in_process'], ['Reembolsado', 'refunded']], {}, class: 'form-select'
+      
+      .mb-3
+        = f.submit 'Actualizar Orden', class: 'btn btn-primary'

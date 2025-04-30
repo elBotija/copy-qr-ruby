@@ -1,0 +1,66 @@
+%header.navbar.navbar-expand-lg.border.shadow-sm
+  %nav.container-xxl.flex-wrap.flex-lg-nowrap.gx-5{ 'aria-label': 'Main navigation' }
+    .d-flex
+      %button.navbar-toggler.d-flex.d-lg-none.order-1.p-2{ type: 'button', 'data-bs-toggle': 'offcanvas', 'data-bs-target': '#bdNavbar', 'aria-controls': 'bdNavbar', 'aria-label': 'Toggle menu' }
+        %svg.bi{ xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', fill: 'currentColor', viewBox: '0 0 16 16' }
+          %path{ 'fill-rule': 'evenodd', d: 'M2.5 11.5A.5.5 0 0 1 3 11h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 7h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 3h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z' }
+
+    %a.navbar-brand.p-0.me-0.me-lg-2{ href: current_user.admin? ? admin_root_path : root_path, 'aria-label': 'Quiero Recordarte' }
+      = image_tag('logo', width: 40, height: 32, alt: 'Logo', class: 'd-inline-block align-text-top')
+
+    %div
+
+    .offcanvas-lg.offcanvas-start.flex-grow-1#bdNavbar{ tabindex: -1, 'aria-labelledby': 'navbarOffcanvasLabel', 'data-bs-scroll': 'true' }
+      .offcanvas-header.px-4.pb-0
+        %h5.offcanvas-title#navbarOffcanvasLabel Quiero Recordarte
+        %button.btn-close{ type: 'button', 'data-bs-dismiss': 'offcanvas', 'aria-label': 'Close', 'data-bs-target': '#bdNavbar' }
+      .offcanvas-body.p-4.pt-0.p-lg-0
+        %hr.d-lg-none
+
+        %ul.navbar-nav.flex-row.flex-wrap.d-lg-none
+          %li.nav-item.col-12.col-lg-auto
+            = link_to('Home', current_user.admin? ? admin_root_path : root_path, class: 'nav-link py-2 px-0 px-lg-2')
+
+        - if current_user.admin?
+          %ul.navbar-nav.flex-row.flex-wrap.d-lg-none
+            %li.nav-item.col-12.col-lg-auto
+              = link_to('Crear Qr', new_admin_qr_code_path, class: 'nav-link py-2 px-0 px-lg-2')
+
+          %ul.navbar-nav.flex-row.flex-wrap.d-lg-none
+            %li.nav-item.col-12.col-lg-auto
+              = link_to('Crear Qr Promocionales', admin_promo_index_path, class: 'nav-link py-2 px-0 px-lg-2')
+
+        - unless current_user.admin?
+          %ul.navbar-nav.flex-row.flex-wrap.ms-md-auto
+            %li.nav-item.dropdown
+              %button.btn.btn-link.nav-link.py-2.px-0.px-lg-2.dropdown-toggle.d-flex.align-items-center{ type: 'button', 'aria-expanded': 'false', 'data-bs-toggle': 'dropdown', 'data-bs-display': 'static', 'aria-label': 'Toggle Profile' }
+                %svg.border{ xmlns: 'http://www.w3.org/2000/svg', width: '25', height: '25', fill: 'currentColor', viewBox: '0 0 16 16' }
+                  %path{ d: 'M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z' }
+                  %path{ 'fill-rule': 'evenodd', d: 'M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z' }
+                %span#profile-toggle.d-lg-none.ms-2 Perfil
+
+              %ul.dropdown-menu.dropdown-menu-end{ 'aria-labelledby': "profile-toggle" }
+                %li
+                  %button.dropdown-item.d-flex.align-items-center{type: 'button', 'aria-pressed': "false"}
+                    %i.bi.bi-info-square
+                    %span.ms-2 Mis Datos
+                %li
+                  %button.dropdown-item.d-flex.align-items-center{type: 'button', 'aria-pressed': "false"}
+                    %i.bi.bi-receipt
+                    %span.ms-2 Mis Facturas
+
+                %hr.d-none.d-lg-block
+
+                %li.d-none.d-lg-block
+                  = link_to(destroy_user_session_path, data: { turbo_method: :delete }, class: 'dropdown-item d-flex align-items-center', type: 'button') do
+                    %i.bi.bi-box-arrow-right
+                    %span.ms-2 Cerrar Sesión
+
+        %hr.d-lg-none
+
+        %ul.navbar-nav.flex-row.flex-wrap.d-lg-none
+          %li.nav-item.col-12.col-lg-auto
+            = link_to(destroy_user_session_path, data: { turbo_method: :delete }, class: 'nav-link py-2 px-0 px-lg-2') do
+              %i.bi.bi-box-arrow-right
+              %span.ms-2 Cerrar Sesión
+

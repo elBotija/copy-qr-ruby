@@ -15,14 +15,16 @@ module Api
       # end
       
       def create_preference
-
+        # Al inicio del método, agrega esto:
+        Rails.logger.info "FRONTEND_URL: #{ENV['FRONTEND_URL']}"
+        Rails.logger.info "BACKEND_URL: #{ENV['BACKEND_URL']}"
         # Manejar las solicitudes OPTIONS preflight
         if request.method == "OPTIONS"
           return head :ok
         end
 
         # Obtiene los datos del formulario
-        membership_type = params[:membershipType]
+        membership_type = params[:membershipType].downcase
         first_name = params[:firstName]
         last_name = params[:lastName]
         email = params[:email]
@@ -91,6 +93,12 @@ module Api
             failure: "#{ENV['FRONTEND_URL']}/failure?order_id=#{order_id}",
             pending: "#{ENV['FRONTEND_URL']}/pending?order_id=#{order_id}"
           },
+          back_url: {
+            success: "#{ENV['FRONTEND_URL']}/success?order_id=#{order_id}",
+            failure: "#{ENV['FRONTEND_URL']}/failure?order_id=#{order_id}",
+            pending: "#{ENV['FRONTEND_URL']}/pending?order_id=#{order_id}"
+          },
+          # URL de retorno para el pago tiene que activarse no se puede a localhost
           auto_return: "approved",
           # Referencia externa para asociar esta preferencia con tu orden
           external_reference: order_id,
@@ -98,9 +106,14 @@ module Api
           notification_url: "#{ENV['BACKEND_URL']}/api/v1/webhook"
         }
         
+        Rails.logger.info "Success URL: #{preference_data[:back_urls][:success]}"
+        Rails.logger.info "Failure URL: #{preference_data[:back_urls][:failure]}"
+        Rails.logger.info "Pending URL: #{preference_data[:back_urls][:pending]}"
+
         # Crea la preferencia en Mercado Pago
         preference_response = sdk.preference.create(preference_data)
-        
+        Rails.logger.info "MercadoPago response status: #{preference_response[:status]}"
+        Rails.logger.info "MercadoPago response body: #{preference_response[:response].inspect}"
         # Verifica la respuesta
         if preference_response[:status] >= 200 and preference_response[:status] < 300
           # Devuelve los datos necesarios al frontend

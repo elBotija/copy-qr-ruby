@@ -8,8 +8,8 @@ end
 
 # Configurar URL de retorno para desarrollo
 if Rails.env.development?
-  ENV['FRONTEND_URL'] ||= 'http://localhost:5501'
-  ENV['BACKEND_URL'] ||= 'https://a42c-2802-8010-8213-de00-ddbc-1d3-6273-b1a8.ngrok-free.app' #podemos usar ngrok
+  ENV['FRONTEND_URL'] ||= 'https://elbotija.github.io/preview'
+  ENV['BACKEND_URL'] ||= 'https://9d4d-190-173-170-143.ngrok-free.app' #podemos usar ngrok
 elsif Rails.env.production?
   ENV['FRONTEND_URL'] ||= 'https://tudominio.com'
   ENV['BACKEND_URL'] ||= 'https://api.tudominio.com'

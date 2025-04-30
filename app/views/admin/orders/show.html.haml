@@ -1,0 +1,135 @@
+%h1.mb-4 
+  Orden
+  = @order.uuid
+
+.mb-3
+  = link_to 'Volver a la lista', admin_orders_path, class: 'btn btn-outline-secondary'
+  = link_to 'Editar orden', edit_admin_order_path(@order), class: 'btn btn-primary ms-2'
+  = link_to 'Gestionar envío', shipping_admin_order_path(@order), class: 'btn btn-success ms-2'
+
+.row
+  .col-md-6
+    .card.mb-4
+      .card-header
+        %h5 Detalles de la Orden
+      .card-body
+        %dl.row
+          %dt.col-sm-4 ID
+          %dd.col-sm-8= @order.id
+          
+          %dt.col-sm-4 UUID
+          %dd.col-sm-8= @order.uuid
+          
+          %dt.col-sm-4 Membresía
+          %dd.col-sm-8= @order.membership_type
+          
+          %dt.col-sm-4 Monto
+          %dd.col-sm-8= number_to_currency(@order.amount)
+          
+          %dt.col-sm-4 Estado
+          %dd.col-sm-8
+            %span{class: "badge bg-#{order_status_color(@order.status)}"}= @order.status_text
+          
+          %dt.col-sm-4 ID de Pago
+          %dd.col-sm-8= @order.payment_id || 'N/A'
+          
+          %dt.col-sm-4 Fecha de Creación
+          %dd.col-sm-8= @order.created_at.strftime('%d/%m/%Y %H:%M')
+          
+          %dt.col-sm-4 Fecha de Actualización
+          %dd.col-sm-8= @order.updated_at.strftime('%d/%m/%Y %H:%M')
+          
+  .col-md-6
+    - if @order.customer
+      .card.mb-4
+        .card-header
+          %h5 Datos del Cliente
+        .card-body
+          %dl.row
+            %dt.col-sm-4 Nombre
+            %dd.col-sm-8= "#{@order.customer.first_name} #{@order.customer.last_name}"
+            
+            %dt.col-sm-4 Email
+            %dd.col-sm-8= @order.customer.email
+            
+            %dt.col-sm-4 Teléfono
+            %dd.col-sm-8= @order.customer.phone || 'N/A'
+            
+            %dt.col-sm-4 Dirección
+            %dd.col-sm-8= @order.customer.address || 'N/A'
+            
+            %dt.col-sm-4 Ciudad
+            %dd.col-sm-8= @order.customer.city || 'N/A'
+            
+            %dt.col-sm-4 Provincia
+            %dd.col-sm-8= @order.customer.province || 'N/A'
+            
+            %dt.col-sm-4 Código Postal
+            %dd.col-sm-8= @order.customer.postal_code || 'N/A'
+    - else
+      .card.mb-4
+        .card-header
+          %h5 Datos del Cliente
+        .card-body
+          .alert.alert-warning No hay datos de cliente disponibles.
+
+.row
+  .col-12
+    .card.mb-4
+      .card-header
+        %h5 
+          Información de Envío
+          = link_to shipping_admin_order_path(@order), class: 'btn btn-sm btn-outline-primary float-end' do
+            %i.bi.bi-pencil
+            Editar
+      .card-body
+        - if @order.shipping_info
+          .row
+            .col-md-6
+              %dl.row
+                %dt.col-sm-4 Estado
+                %dd.col-sm-8
+                  %span{class: "badge bg-#{shipping_status_color(@order.shipping_info.status)}"}= @order.shipping_info.status_text
+                
+                %dt.col-sm-4 Empresa de transporte
+                %dd.col-sm-8= @order.shipping_info.carrier_name || 'No especificado'
+                
+                %dt.col-sm-4 Código de seguimiento
+                %dd.col-sm-8= @order.shipping_info.tracking_code || 'No especificado'
+                
+                %dt.col-sm-4 Fecha de envío
+                %dd.col-sm-8= @order.shipping_info.shipped_date ? @order.shipping_info.shipped_date.strftime('%d/%m/%Y') : 'No especificado'
+            
+            .col-md-6
+              %dl.row
+                %dt.col-sm-4 Fecha estimada de entrega
+                %dd.col-sm-8= @order.shipping_info.estimated_delivery_date ? @order.shipping_info.estimated_delivery_date.strftime('%d/%m/%Y') : 'No especificado'
+                
+                %dt.col-sm-4 Factura
+                %dd.col-sm-8
+                  - if @order.shipping_info&.invoice_filename.present?
+                    = link_to (@order.shipping_info.invoice_number || "Factura"), download_admin_invoices_path(order_id: @order.id), target: "_blank"
+                    %small.text-muted= @order.shipping_info.invoice_date&.strftime("%d/%m/%Y")
+                  - else
+                    No disponible
+
+                %dt.col-sm-4 Factura enviada
+                %dd.col-sm-8
+                  - if @order.shipping_info.invoice_sent
+                    %i.bi.bi-check-circle-fill.text-success Sí
+                  - else
+                    %i.bi.bi-x-circle-fill.text-danger No
+                
+                %dt.col-sm-4 Notificación enviada
+                %dd.col-sm-8
+                  - if @order.shipping_info.tracking_notification_sent
+                    %i.bi.bi-check-circle-fill.text-success Sí
+                  - else
+                    %i.bi.bi-x-circle-fill.text-danger No
+          
+          - if @order.shipping_info.notes.present?
+            %hr
+            %h6 Notas:
+            %p= @order.shipping_info.notes
+        - else
+          .alert.alert-info No hay información de envío disponible.
