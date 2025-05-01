@@ -68,6 +68,14 @@
       .card
         .card-header
           %h5 Gestión de Factura
+          = render "tracking_email_button", order: @order  
+          - if @order.shipping_info&.invoice_filename.present? && !@order.shipping_info.invoice_sent?  
+            = form_tag send_invoice_admin_order_path(@order), method: :post, class: "mt-3" do  
+              = submit_tag "Enviar factura por correo", class: "btn btn-primary"  
+          - elsif @order.shipping_info&.invoice_sent?  
+            .alert.alert-success.mt-3  
+              %i.bi.bi-check-circle-fill  
+              La factura ya fue enviada por correo.  
         .card-body
           - if @order.shipping_info&.invoice_filename.present?
             .alert.alert-success.mb-3

@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nueva Compra - Quiero Recordarte</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Montserrat', Arial, sans-serif; line-height: 1.6; color: #333333; background-color: #f5f5f5;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td align="center" style="padding: 20px 0;">
+        <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <!-- HEADER -->
+          <tr>
+            <td align="center" bgcolor="#00524b" style="padding: 20px;">
+              <img src="https://elbotija.github.io/preview/mailing/icons/logo.jpeg" alt="Quiero Recordarte" width="200" style="display: block; margin-bottom: 10px;" />
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">¡Nueva Compra de Membresía!</h1>
+            </td>
+          </tr>
+          
+          <!-- CONTENT -->
+          <tr>
+            <td style="padding: 30px;">
+              <!-- Alert Badge -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 15px;">
+                <tr>
+                  <td>
+                    <table border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td bgcolor="#ac6a5e" style="border-radius: 20px; padding: 5px 12px; font-size: 12px; color: #ffffff;">
+                          Nueva Compra
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              
+              <p>Se ha registrado una nueva compra en el sistema. A continuación, los detalles para comenzar a preparar el envío:</p>
+              
+              <!-- Order Details -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8f9fa; border-radius: 8px; margin: 20px 0;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <h3 style="color: #00524b; font-weight: 600; margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid #e1e5cd; padding-bottom: 8px;">Detalles de la Orden</h3>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">ID de Orden:</td>
+                        <td width="50%" align="right"><%= @order.uuid %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Membresía:</td>
+                        <td width="50%" align="right"><%= @membership_type %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Monto:</td>
+                        <td width="50%" align="right">$<%= @order.amount %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Estado:</td>
+                        <td width="50%" align="right"><strong style="color: #00524b;"><%= @order.status.titleize %></strong></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Fecha:</td>
+                        <td width="50%" align="right"><%= @order.created_at.strftime('%d/%m/%Y %H:%M') %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">ID de Pago (MercadoPago):</td>
+                        <td width="50%" align="right"><%= @order.payment_id || 'N/A' %></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Customer Info -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8f9fa; border-radius: 8px; margin: 20px 0;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <h3 style="color: #00524b; font-weight: 600; margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid #e1e5cd; padding-bottom: 8px;">Datos del Cliente</h3>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Nombre:</td>
+                        <td width="50%" align="right"><%= @customer.first_name %> <%= @customer.last_name %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Email:</td>
+                        <td width="50%" align="right"><%= @customer.email %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Teléfono:</td>
+                        <td width="50%" align="right"><%= @customer.phone || 'N/A' %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Dirección:</td>
+                        <td width="50%" align="right"><%= @customer.address || 'N/A' %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Ciudad:</td>
+                        <td width="50%" align="right"><%= @customer.city || 'N/A' %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Provincia:</td>
+                        <td width="50%" align="right"><%= @customer.province || 'N/A' %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Código Postal:</td>
+                        <td width="50%" align="right"><%= @customer.postal_code || 'N/A' %></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Action Needed -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fdf2e9; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ac6a5e;">
+                <tr>
+                  <td style="padding: 15px;">
+                    <h3 style="color: #ac6a5e; margin-top: 0;">Acción requerida</h3>
+                    <p>Se requiere preparar el envío de la placa QR según las siguientes especificaciones:</p>
+                    <ul>
+                      <li><strong>Tipo de placa:</strong> <%= @tipo_placa %></li>
+                      <li><strong>Dimensiones:</strong> <%= @dimensiones_placa %></li>
+                      <li><strong>Material:</strong> <%= @material_placa %></li>
+                      <li><strong>Packaging:</strong> <%= @tipo_packaging %></li>
+                    </ul>
+                    <p><strong>Fecha sugerida de envío:</strong> <%= @fecha_sugerida_envio %></p>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Button -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 25px 0;">
+                <tr>
+                  <td align="center">
+                    <table border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td bgcolor="#00524b" style="border-radius: 4px; padding: 12px 24px;">
+                          <a href="<%= @link_admin_ordenes %>" style="font-family: 'Montserrat', Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; display: inline-block; font-weight: 600;">Ver en Panel de Administración</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              
+              <p>Una vez que hayas preparado y enviado el pedido, recuerda actualizar el estado en el sistema para que se envíe automáticamente la notificación al cliente.</p>
+            </td>
+          </tr>
+          
+          <!-- FOOTER -->
+          <tr>
+            <td bgcolor="#b8c4ba" style="padding: 20px; text-align: center; font-size: 12px; color: #333333;">
+              <p style="margin: 10px 0;">Este es un mensaje automático generado por el sistema de Quiero Recordarte.</p>
+              <p style="margin: 10px 0;">&copy; 2024 Quiero Recordarte. Todos los derechos reservados.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

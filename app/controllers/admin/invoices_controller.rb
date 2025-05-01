@@ -38,7 +38,13 @@ module Admin
         invoice_date: params[:invoice_date]
       )
       
-      redirect_to shipping_admin_order_path(@order), notice: 'Factura cargada correctamente.'
+      # Si el usuario quiere enviar la factura por correo
+      if params[:send_invoice] == '1'
+        MailDeliveryService.process_invoice_upload(@order)
+        redirect_to shipping_admin_order_path(@order), notice: 'Factura cargada y enviada por correo correctamente.'
+      else
+        redirect_to shipping_admin_order_path(@order), notice: 'Factura cargada correctamente.'
+      end
     end
 
     def destroy

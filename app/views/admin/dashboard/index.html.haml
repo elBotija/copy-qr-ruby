@@ -1,1 +1,128 @@
 
+%h1.mb-4 Dashboard - Sistema de Gestión de Pedidos
+
+.row.mb-4
+  .col-md-3
+    .card.text-white.bg-primary.mb-3
+      .card-body
+        %h5.card-title Total de Órdenes
+        %h2.display-4= @total_orders
+  
+  .col-md-3
+    .card.text-white.bg-success.mb-3
+      .card-body
+        %h5.card-title Órdenes Completadas
+        %h2.display-4= @completed_orders
+  
+  .col-md-3
+    .card.text-white.bg-warning.mb-3
+      .card-body
+        %h5.card-title Órdenes Pendientes
+        %h2.display-4= @pending_orders
+  
+  .col-md-3
+    .card.text-white.bg-info.mb-3
+      .card-body
+        %h5.card-title Ingresos Totales
+        %h2.display-4
+          = number_to_currency(@revenue_total)
+
+.row.mb-4
+  .col-md-4
+    .card.mb-3
+      .card-header Estadísticas de Envío
+      .card-body
+        %ul.list-group.list-group-flush
+          %li.list-group-item
+            Órdenes Enviadas
+            %span.badge.bg-success.float-end= @orders_shipped
+          %li.list-group-item
+            Con Seguimiento
+            %span.badge.bg-info.float-end= @orders_with_tracking
+          %li.list-group-item
+            Con Facturas
+            %span.badge.bg-primary.float-end= @orders_with_invoices
+  
+  .col-md-4
+    .card.mb-3
+      .card-header Estadísticas por Membresía
+      .card-body
+        - if @membership_stats.any?
+          %ul.list-group.list-group-flush
+            - @membership_stats.each do |type, count|
+              %li.list-group-item
+                = type.titleize
+                %span.badge.bg-primary.float-end= count
+        - else
+          .alert.alert-info.mb-0 No hay datos disponibles
+  
+  .col-md-4
+    .card.mb-3
+      .card-header Estadísticas por Transportista
+      .card-body
+        - if @carrier_stats.any?
+          %ul.list-group.list-group-flush
+            - @carrier_stats.each do |carrier, count|
+              %li.list-group-item
+                = carrier
+                %span.badge.bg-primary.float-end= count
+        - else
+          .alert.alert-info.mb-0 No hay datos disponibles
+
+.row
+  .col-md-6
+    .card.mb-3
+      .card-header 
+        Órdenes Recientes
+        = link_to 'Ver todas', admin_orders_path, class: 'float-end btn btn-sm btn-outline-primary'
+      .card-body
+        - if @recent_orders.any?
+          .table-responsive
+            %table.table.table-striped.table-sm
+              %thead
+                %tr
+                  %th ID
+                  %th Cliente
+                  %th Estado
+                  %th Monto
+                  %th Fecha
+              %tbody
+                - @recent_orders.each do |order|
+                  %tr
+                    %td= link_to order.uuid.truncate(10), admin_order_path(order)
+                    %td= order.customer ? "#{order.customer.first_name} #{order.customer.last_name}" : 'N/A'
+                    %td
+                      %span{class: "badge bg-#{order_status_color(order.status)}"}= order.status.titleize
+                    %td= number_to_currency(order.amount)
+                    %td= order.created_at.strftime('%d/%m/%Y')
+        - else
+          .alert.alert-info.mb-0 No hay órdenes recientes
+  
+  .col-md-6
+    .card.mb-3
+      .card-header 
+        Requieren Atención
+        = link_to 'Ver todas', admin_orders_path(status: 'completed', shipping_status: 'pending'), class: 'float-end btn btn-sm btn-outline-danger'
+      .card-body
+        - if @orders_need_attention.any?
+          .table-responsive
+            %table.table.table-striped.table-sm
+              %thead
+                %tr
+                  %th ID
+                  %th Cliente
+                  %th Días Pendiente
+                  %th Acciones
+              %tbody
+                - @orders_need_attention.each do |order|
+                  - days_pending = (Date.today - order.created_at.to_date).to_i
+                  %tr
+                    %td= link_to order.uuid.truncate(10), admin_order_path(order)
+                    %td= order.customer ? "#{order.customer.first_name} #{order.customer.last_name}" : 'N/A'
+                    %td
+                      %span{class: "badge #{days_pending > 5 ? 'bg-danger' : 'bg-warning'}"}= days_pending
+                    %td
+                      = link_to shipping_admin_order_path(order), class: 'btn btn-sm btn-success' do
+                        Gestionar Envío
+        - else
+          .alert.alert-success.mb-0 No hay órdenes que requieran atención

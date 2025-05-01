@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tu QR ha sido enviado - Quiero Recordarte</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Montserrat', Arial, sans-serif; line-height: 1.6; color: #333333; background-color: #f5f5f5;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td align="center" style="padding: 20px 0;">
+        <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <!-- HEADER -->
+          <tr>
+            <td align="center" bgcolor="#00524b" style="padding: 20px;">
+              <img src="https://elbotija.github.io/preview/mailing/icons/logo.jpeg" alt="Quiero Recordarte" width="200" style="display: block; margin-bottom: 10px;" />
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">¡Tu Placa QR ha sido enviada!</h1>
+            </td>
+          </tr>
+          
+          <!-- CONTENT -->
+          <tr>
+            <td style="padding: 30px;">
+              <!-- Shipping Icon -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 20px;">
+                <tr>
+                  <td align="center">
+                    <img src="https://elbotija.github.io/preview/mailing/icons/seguimiento.png" alt="Envío" width="64" height="64" style="display: block;" />
+                  </td>
+                </tr>
+              </table>
+              
+              <p>Estimado/a <strong><%= @customer.first_name %></strong>,</p>
+              
+              <p>¡Tenemos buenas noticias! Tu placa QR correspondiente a la <strong>Membresía<%= @membership_type %></strong> ha sido enviada y está en camino a la dirección que nos proporcionaste.</p>
+              
+              <!-- Tracking Box -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #E1E5CD; border-radius: 8px; margin: 20px 0;">
+                <tr>
+                  <td style="padding: 20px;" align="center">
+                    <p style="margin-bottom: 5px;">Tu código de seguimiento es:</p>
+                    <div style="font-size: 24px; font-weight: 700; color: #00524b; letter-spacing: 2px; margin: 10px 0;"><%= @shipping_info.tracking_code %></div>
+                    <p style="margin-top: 5px;">Empresa de transporte: <strong><%= @shipping_info.carrier_name %></strong></p>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" style="margin-top: 15px;">
+                      <tr>
+                        <td bgcolor="#00524b" style="border-radius: 4px; padding: 12px 24px;">
+                          <a href="<%= @link_seguimiento %>" style="font-family: 'Montserrat', Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; display: inline-block; font-weight: 600;">Seguir mi envío</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Shipping Details -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8f9fa; border-radius: 8px; margin: 20px 0;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <h3 style="color: #00524b; margin-top: 0;">Detalles del envío</h3>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Dirección de entrega:</td>
+                        <td width="50%" align="right"><%= @customer.address %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Ciudad:</td>
+                        <td width="50%" align="right"><%= @customer.city %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Provincia:</td>
+                        <td width="50%" align="right"><%= @customer.province %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 10px;">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Código Postal:</td>
+                        <td width="50%" align="right"><%= @customer.postal_code %></td>
+                      </tr>
+                    </table>
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td width="50%" style="font-weight: 600; color: #00524b;">Fecha estimada de entrega:</td>
+                        <td width="50%" align="right"><strong><%= @shipping_info.estimated_delivery_date&.strftime('%d/%m/%Y') || 'No especificada' %></strong></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Note -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8f9fa; margin: 20px 0; border-left: 4px solid #947056;">
+                <tr>
+                  <td style="padding: 15px;">
+                    <p style="margin: 0;"><strong>Importante:</strong> Una vez que recibas la placa QR, podrás instalarla siguiendo las instrucciones incluidas en el paquete. Recuerda que para las placas de tipo <strong><%= @tipo_placa %></strong>, es recomendable seguir las indicaciones específicas para su correcta fijación.</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <p>Mientras esperas la llegada de tu placa QR, te animamos a que continúes con la creación de tu memorial digital si aún no lo has completado. Tu memorial estará listo para ser visualizado en cuanto escanees el código QR.</p>
+              
+              <!-- Button -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 25px 0;">
+                <tr>
+                  <td align="center">
+                    <table border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td bgcolor="#00524b" style="border-radius: 4px; padding: 12px 24px;">
+                          <a href="<%= @link_mi_cuenta %>" style="font-family: 'Montserrat', Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; display: inline-block; font-weight: 600;">Ir a Mi Cuenta</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              
+              <p>Si tienes alguna pregunta sobre tu envío o necesitas asistencia, no dudes en contactarnos a través de nuestro WhatsApp o correo electrónico.</p>
+              
+              <p>Atentamente,<br />
+              El equipo de <strong style="color: #00524b;">Quiero Recordarte</strong></p>
+            </td>
+          </tr>
+          
+          <!-- FOOTER -->
+          <tr>
+            <td bgcolor="#b8c4ba" style="padding: 20px; text-align: center; font-size: 12px; color: #333333;">
+              <!-- Social Links -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 15px 0;">
+                <tr>
+                  <td align="center">
+                    <a href="https://www.facebook.com/quierorecordarteqr" style="display: inline-block; margin: 0 5px;">
+                      <img src="https://elbotija.github.io/preview/mailing/icons/facebook.png" alt="Facebook" width="44" height="44" style="display: block;" />
+                    </a>
+                    <a href="https://www.instagram.com/quierorecordarteqr/" style="display: inline-block; margin: 0 5px;">
+                      <img src="https://elbotija.github.io/preview/mailing/icons/instagram.png" alt="Instagram" width="44" height="44" style="display: block;" />
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 10px 0;">&copy; 2024 Quiero Recordarte. Todos los derechos reservados.</p>
+              <p style="margin: 10px 0;"><a href="<%= @link_terminos %>" style="color: #333333; text-decoration: underline;">Términos y condiciones</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

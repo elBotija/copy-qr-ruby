@@ -1,0 +1,11 @@
+- if !order.shipping_info.tracking_notification_sent? && order.shipping_info.has_tracking?
+  = form_tag send_tracking_admin_order_path(order), method: :post, class: 'mt-3' do
+    = submit_tag 'Enviar información de seguimiento por correo', class: 'btn btn-primary'
+- elsif order.shipping_info.tracking_notification_sent?
+  .alert.alert-success.mt-3
+    %i.bi.bi-check-circle-fill
+    La información de seguimiento ya fue enviada por correo.
+- else
+  .alert.alert-warning.mt-3
+    %i.bi.bi-exclamation-triangle-fill
+    Para enviar el correo, primero debe completar la información de seguimiento.

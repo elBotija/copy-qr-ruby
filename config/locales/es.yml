@@ -48,3 +48,12 @@ es:
       memorial:
         one: Memorial
         other: Memoriales
+
+  number:
+    currency:
+      format:
+        unit: '$'
+        delimiter: '.'
+        separator: ','
+        precision: 2
+        format: '%u%n' 

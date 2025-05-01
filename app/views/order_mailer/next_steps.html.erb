@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Próximos Pasos para tu Memorial Digital - Quiero Recordarte</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Montserrat', Arial, sans-serif; line-height: 1.6; color: #333333; background-color: #f5f5f5;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td align="center" style="padding: 20px 0;">
+        <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <!-- HEADER -->
+          <tr>
+            <td align="center" bgcolor="#00524b" style="padding: 20px;">
+              <img src="https://elbotija.github.io/preview/mailing/icons/logo.jpeg" alt="Quiero Recordarte" width="200" style="display: block; margin-bottom: 10px;" />
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">Próximos Pasos para tu Memorial Digital</h1>
+            </td>
+          </tr>
+          
+          <!-- CONTENT -->
+          <tr>
+            <td style="padding: 30px;">
+              <p>Estimado/a <strong><%= @customer.first_name %></strong>,</p>
+              
+              <p>¡Gracias por confiar en Quiero Recordarte! Nos alegra que hayas elegido nuestro servicio para honrar la memoria de tu ser querido. A continuación, te explicamos los pasos a seguir para crear tu memorial digital:</p>
+              
+              <!-- Step 1 -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 30px;">
+                <tr>
+                  <td width="50" valign="top">
+                    <table border="0" cellpadding="0" cellspacing="0" width="40" height="40" bgcolor="#00524b" style="border-radius: 50%; text-align: center;">
+                      <tr>
+                        <td align="center" valign="middle" style="color: #ffffff; font-weight: 600; font-size: 20px;">1</td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td valign="top" style="padding-left: 15px;">
+                    <h3 style="color: #00524b; font-weight: 600; margin-top: 0; margin-bottom: 10px;">Crear y activar tu cuenta</h3>
+                    <p style="margin-top: 0;">Hemos creado una cuenta para ti con el correo electrónico que proporcionaste. Para activarla, simplemente haz clic en el botón de abajo y establece tu contraseña:</p>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 15px 0;">
+                      <tr>
+                        <td align="center">
+                          <table border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td bgcolor="#00524b" style="border-radius: 4px; padding: 12px 24px;">
+                                <a href="<%= @link_activacion %>" style="font-family: 'Montserrat', Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; display: inline-block; font-weight: 600;">Activar Mi Cuenta</a>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Step 2 -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 30px;">
+                <tr>
+                  <td width="50" valign="top">
+                    <table border="0" cellpadding="0" cellspacing="0" width="40" height="40" bgcolor="#00524b" style="border-radius: 50%; text-align: center;">
+                      <tr>
+                        <td align="center" valign="middle" style="color: #ffffff; font-weight: 600; font-size: 20px;">2</td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td valign="top" style="padding-left: 15px;">
+                    <h3 style="color: #00524b; font-weight: 600; margin-top: 0; margin-bottom: 10px;">Preparación de materiales</h3>
+                    <p style="margin-top: 0;">Antes de comenzar a crear el memorial, te recomendamos tener listos los siguientes elementos:</p>
+                    <ul>
+                      <li>Foto de perfil y portada para el memorial</li>
+                      <li>Información personal de tu ser querido (fechas, lugares, etc.)</li>
+                      <li>Texto biográfico (hasta <%= @limite_caracteres %> caracteres)</li>
+                      <li>Fotos adicionales (hasta <%= @limite_fotos %> fotos)</li>
+                      <li>Archivos de audio o video (hasta <%= @limite_archivos %> archivos)</li>
+                    </ul>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Step 3 -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 30px;">
+                <tr>
+                  <td width="50" valign="top">
+                    <table border="0" cellpadding="0" cellspacing="0" width="40" height="40" bgcolor="#00524b" style="border-radius: 50%; text-align: center;">
+                      <tr>
+                        <td align="center" valign="middle" style="color: #ffffff; font-weight: 600; font-size: 20px;">3</td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td valign="top" style="padding-left: 15px;">
+                    <h3 style="color: #00524b; font-weight: 600; margin-top: 0; margin-bottom: 10px;">Crear el memorial</h3>
+                    <p style="margin-top: 0;">Una vez que hayas activado tu cuenta, podrás acceder a nuestro panel donde encontrarás una interfaz intuitiva para crear el memorial digital.</p>
+                    <p>Completa cada sección con la información y los materiales que hayas preparado. Nuestro sistema te guiará paso a paso.</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Step 4 -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 30px;">
+                <tr>
+                  <td width="50" valign="top">
+                    <table border="0" cellpadding="0" cellspacing="0" width="40" height="40" bgcolor="#00524b" style="border-radius: 50%; text-align: center;">
+                      <tr>
+                        <td align="center" valign="middle" style="color: #ffffff; font-weight: 600; font-size: 20px;">4</td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td valign="top" style="padding-left: 15px;">
+                    <h3 style="color: #00524b; font-weight: 600; margin-top: 0; margin-bottom: 10px;">Recepción de la placa QR</h3>
+                    <p style="margin-top: 0;">Mientras tanto, estaremos preparando tu placa QR <%= @tipo_placa %> y te la enviaremos a la dirección que proporcionaste. Recibirás una notificación cuando se realice el envío, junto con el código de seguimiento.</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Note -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8f9fa; margin: 20px 0; border-left: 4px solid #947056;">
+                <tr>
+                  <td style="padding: 15px;">
+                    <p style="margin: 0;"><strong>¿Necesitas ayuda con la biografía?</strong> Tenemos una guía especial que te puede ayudar a redactar un texto emotivo y significativo. <a href="<%= @link_guia_biografia %>" style="color: #947056; text-decoration: underline;">Consulta nuestra guía aquí</a>.</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <p>Si tienes alguna pregunta durante este proceso, no dudes en contactarnos a través de nuestro WhatsApp o correo electrónico. Estamos aquí para apoyarte en cada paso.</p>
+              
+              <p>Atentamente,<br />
+              El equipo de <strong style="color: #00524b;">Quiero Recordarte</strong></p>
+            </td>
+          </tr>
+          
+          <!-- FOOTER -->
+          <tr>
+            <td bgcolor="#b8c4ba" style="padding: 20px; text-align: center; font-size: 12px; color: #333333;">
+              <!-- Social Links -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 15px 0;">
+                <tr>
+                  <td align="center">
+                    <a href="https://www.facebook.com/quierorecordarteqr" style="display: inline-block; margin: 0 5px;">
+                      <img src="https://elbotija.github.io/preview/mailing/icons/facebook.png" alt="Facebook" width="44" height="44" style="display: block;" />
+                    </a>
+                    <a href="https://www.instagram.com/quierorecordarteqr/" style="display: inline-block; margin: 0 5px;">
+                      <img src="https://elbotija.github.io/preview/mailing/icons/instagram.png" alt="Instagram" width="44" height="44" style="display: block;" />
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 10px 0;">&copy; 2024 Quiero Recordarte. Todos los derechos reservados.</p>
+              <p style="margin: 10px 0;"><a href="<%= @link_terminos %>" style="color: #333333; text-decoration: underline;">Términos y condiciones</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

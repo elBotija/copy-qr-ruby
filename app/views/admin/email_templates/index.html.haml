@@ -1,0 +1,60 @@
+%h1.mb-4 Plantillas de Correo Electrónico
+
+.card.mb-4
+  .card-header
+    %h5 Enviar Correo de Prueba
+  .card-body
+    = form_tag '', method: :post, class: 'row g-3', id: 'test-email-form' do
+      .col-md-6
+        = label_tag :email, 'Dirección de Correo', class: 'form-label'
+        = email_field_tag :email, nil, class: 'form-control', required: true, placeholder: 'ejemplo@correo.com'
+      
+      .col-md-4
+        = label_tag :template_id, 'Plantilla', class: 'form-label'
+        = select_tag :template_id, options_for_select(@templates.map { |t| [t[:name], t[:id]] }), class: 'form-select'
+      
+      .col-md-2.d-flex.align-items-end
+        = submit_tag 'Enviar Prueba', class: 'btn btn-primary w-100'
+
+.row
+  - @templates.each do |template|
+    .col-md-6.mb-4
+      .card.h-100
+        .card-header
+          %h5= template[:name]
+        .card-body
+          %p= template[:description]
+          
+          .d-flex.justify-content-between.mt-3
+            = link_to preview_admin_email_template_path(template[:id]), class: 'btn btn-info', target: '_blank' do
+              %i.bi.bi-eye
+              Vista Previa
+            
+            %button.btn.btn-primary.send-test-btn{'data-template': template[:id]}
+              %i.bi.bi-envelope
+              Enviar Prueba
+
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+    const testButtons = document.querySelectorAll('.send-test-btn');
+    const emailForm = document.getElementById('test-email-form');
+    const templateSelect = document.getElementById('template_id');
+    
+    testButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const templateId = this.getAttribute('data-template');
+        templateSelect.value = templateId;
+        
+        // Verificar si hay un email en el formulario
+        const emailInput = document.getElementById('email');
+        if(!emailInput.value) {
+          emailInput.focus();
+          return;
+        }
+        
+        // Enviar el formulario
+        emailForm.action = `/admin/email_templates/${templateId}/test`;
+        emailForm.submit();
+      });
+    });
+  });

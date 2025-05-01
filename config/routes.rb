@@ -8,6 +8,12 @@ Rails.application.routes.draw do
   get "up" => 'rails/health#show', as: :rails_health_check
 
   namespace :admin do
+    resources :email_templates, only: [:index] do
+      member do
+        get :preview
+        post :test
+      end
+    end
     resources :invoices, only: [:new, :create, :destroy] do
       collection do
         get :download
@@ -15,6 +21,8 @@ Rails.application.routes.draw do
     end
     resources :orders do
       member do
+        post :send_tracking
+        post :send_invoice
         get :shipping
         patch :shipping, to: "orders#update"
       end

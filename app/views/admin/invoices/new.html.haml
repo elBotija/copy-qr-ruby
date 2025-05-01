@@ -30,4 +30,9 @@
         %small.form-text.text-muted El archivo debe estar en formato PDF.
 
       .mb-3
+        .form-check.form-switch
+          = check_box_tag :send_invoice, '1', true, class: 'form-check-input'
+          = label_tag :send_invoice, 'Enviar factura por correo al cliente', class: 'form-check-label'
+
+      .mb-3
         = submit_tag 'Cargar Factura', class: 'btn btn-primary'
