@@ -1,0 +1,14 @@
+%main.form-verification.w-100.m-auto.bg-white.rounded-3.shadow-lg.p-4.d-flex.flex-wrap.justify-center.my-5{style: "max-width: 500px;"}
+  %div.w-100.text-center.mb-4
+    %h2 Memorial Privado
+    %p Este memorial requiere un código de acceso para ser visualizado.
+    %p Ingrese el código PIN de 4 dígitos para continuar.
+
+  %div.w-100
+    = form_with(url: verify_pin_memorial_path(@memorial), method: :post) do |f|
+      .mb-3
+        = f.label :pin_code, "Código PIN", class: 'form-label'
+        = f.text_field :pin_code, class: 'form-control form-control-lg text-center', maxlength: 4, pattern: '\d{4}', required: true, autofocus: true, placeholder: '****', inputmode: 'numeric'
+      
+      .actions.mt-3
+        = f.submit "Verificar", class: 'btn btn-primary w-100 py-2'

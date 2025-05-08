@@ -1,6 +1,12 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-  resources :memorials, only: %i[new create show edit update]
+  resources :memorials, only: %i[new create show edit update] do
+    member do
+      get :verify_pin
+      post :verify_pin, to: 'memorials#check_pin'
+    end
+  end
+  
   # Hacer explícita la configuración de Devise
   devise_for :users
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

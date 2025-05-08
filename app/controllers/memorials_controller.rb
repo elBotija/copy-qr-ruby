@@ -3,6 +3,11 @@ class MemorialsController < ApplicationController
 
   # GET /memorials/1
   def show
+    @memorial = set_memorial
+    
+    if @memorial.is_private? && !session["memorial_#{@memorial.id}_authorized"]
+      redirect_to verify_pin_memorial_path(@memorial)
+    end
   end
 
   # GET /memorials/new
@@ -39,7 +44,25 @@ class MemorialsController < ApplicationController
     @memorial.destroy!
     redirect_to memorials_url, notice: "Memorial was successfully destroyed.", status: :see_other
   end
-
+  
+  # Display PIN verification form
+  def verify_pin
+    @memorial = Memorial.find(params[:id])
+  end
+  
+  # Verify the entered PIN
+  def check_pin
+    @memorial = Memorial.find(params[:id])
+    
+    if @memorial.pin_code == params[:pin_code]
+      session["memorial_#{@memorial.id}_authorized"] = true
+      redirect_to @memorial
+    else
+      flash.now[:alert] = 'Código PIN incorrecto'
+      render :verify_pin
+    end
+  end
+  
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_memorial
@@ -48,7 +71,7 @@ class MemorialsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def memorial_params
-      params.require(:memorial).permit(
+      params.require(:memorial).permit(:is_private, :pin_code, 
         :dob,
         :bio,
         :caption,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_04_28_212411) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_05_112502) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -76,6 +76,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_28_212411) do
     t.string "caption", limit: 255
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_private", default: false
+    t.string "pin_code"
     t.index ["user_id"], name: "index_memorials_on_user_id"
   end
 

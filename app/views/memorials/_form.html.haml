@@ -30,6 +30,30 @@
   .mb-3
     = f.label :bio, class: 'form-label'
     = f.text_area :bio, class: 'form-control', rows: 10
+  .flex.md:space-x-4.flex-wrap{class: "md:!flex-nowrap"}
+    .mb-3.w-full
+      %h4 Configuración de Privacidad
+      .form-check.form-switch
+        = f.check_box :is_private, class: 'form-check-input', id: 'toggle-privacy'
+        = f.label :is_private, 'Memorial Privado', class: 'form-check-label'
+        %p.form-text.text-muted Activa esta opción si deseas que el memorial sea de acceso restringido.
+
+    .mb-3.w-full#pin-code-container{style: f.object.is_private? ? "" : "display: none;"}
+      = f.label :pin_code, "Código PIN (4 dígitos)", class: 'form-label'
+      = f.text_field :pin_code, class: 'form-control', maxlength: 4, pattern: '\d{4}', placeholder: '1234', inputmode: 'numeric'
+      %p.form-text.text-muted Este código será solicitado para acceder al memorial.
+
+    :javascript
+      document.addEventListener('DOMContentLoaded', function() {
+        const togglePrivacy = document.getElementById('toggle-privacy');
+        const pinContainer = document.getElementById('pin-code-container');
+        
+        if (togglePrivacy) {
+          togglePrivacy.addEventListener('change', function() {
+            pinContainer.style.display = this.checked ? '' : 'none';
+          });
+        }
+      });
 
   .flex.mb-3.md:space-x-4.flex-wrap{class: "md:!flex-nowrap"}
     .mb-3.w-full.flex.flex-col{class: f.object.profile_image.attached? ? "min-h-[150px]" : ""}

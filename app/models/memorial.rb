@@ -11,6 +11,12 @@ class Memorial < ApplicationRecord
   validates :dob, presence: true
   validates :dod, presence: true
   validates :caption, length: { maximum: 255, allow_blank: true }
+  
+  # PIN validation - 4 digits required when memorial is private
+  validates :pin_code, length: { is: 4 }, 
+                     format: { with: /\A\d{4}\z/, message: "debe ser 4 dígitos numéricos" },
+                     presence: true,
+                     if: -> { is_private? }
 
   def full_name
     "#{first_name} #{last_name}".strip

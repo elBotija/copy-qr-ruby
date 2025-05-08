@@ -1,6 +1,6 @@
 %main
   %div.mb-4
-    = link_to('Nuevo memorial', new_memorial_path, class: 'btn  btn-primary', type: 'button')
+    = link_to('Nuevo memorial', new_memorial_path, class: 'btn btn-primary', type: 'button')
 
   .row.row-cols-1.row-cols-md-2.g-4
     - @memorials.each do |memorial|
@@ -8,10 +8,12 @@
         .card{ style: 'width: 18rem;' }
           = image_tag('https://placehold.co/572x360',alt: '...', class: 'card-img-top',height: '180',width: '100%',preserveAspectRatio:"xMidYMid slice",focusable: false)
           .card-body
-            %h5.card-title= memorial.full_name
-            %p.class-text= memorial.caption
+            %h5.card-title
+              = memorial.full_name
+              - if memorial.is_private?
+                %span.badge.bg-warning.ms-2 Privado
+            %p.card-text= memorial.caption
             .actions
               = link_to('Ver', memorial_path(memorial), class: 'btn btn-primary')
               = link_to('Asociar QR', '#', class: 'btn btn-primary')
               = link_to('Editar', edit_memorial_path(memorial), class: 'btn btn-primary')
-
