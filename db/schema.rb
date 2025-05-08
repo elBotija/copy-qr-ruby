@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_05_112502) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_08_011923) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -113,7 +113,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_05_112502) do
     t.datetime "used_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "memorial_id"
     t.index ["code"], name: "index_qr_codes_on_code", unique: true
+    t.index ["memorial_id"], name: "index_qr_codes_on_memorial_id"
   end
 
   create_table "shipping_infos", force: :cascade do |t|
@@ -164,5 +166,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_05_112502) do
   add_foreign_key "memberships", "orders"
   add_foreign_key "memberships", "orders"
   add_foreign_key "memorials", "users"
+  add_foreign_key "qr_codes", "memorials"
   add_foreign_key "shipping_infos", "orders"
 end

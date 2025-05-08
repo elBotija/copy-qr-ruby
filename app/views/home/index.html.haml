@@ -12,8 +12,13 @@
               = memorial.full_name
               - if memorial.is_private?
                 %span.badge.bg-warning.ms-2 Privado
+              - if memorial.published?
+                %span.badge.bg-success.ms-2 Publicado
             %p.card-text= memorial.caption
             .actions
               = link_to('Ver', memorial_path(memorial), class: 'btn btn-primary')
-              = link_to('Asociar QR', '#', class: 'btn btn-primary')
+              - if memorial.published?
+                = link_to('Ver como visitante', memorial_by_qr_path(memorial.qr_code.code), class: 'btn btn-outline-primary', target: '_blank') 
+              - else
+                = link_to('Asociar QR', attach_qr_form_memorial_path(memorial), class: 'btn btn-primary')
               = link_to('Editar', edit_memorial_path(memorial), class: 'btn btn-primary')

@@ -1,0 +1,21 @@
+%h1.mb-4 Asociar QR a Memorial
+
+.card
+  .card-header
+    %h5= @memorial.full_name
+  .card-body
+    %p Para hacer accesible su memorial mediante un código QR, seleccione uno de los disponibles:
+    
+    - if @available_qr_codes.empty?
+      .alert.alert-warning
+        No hay códigos QR disponibles para asociar. Por favor, contacte al administrador.
+    - else
+      = form_with(url: attach_qr_memorial_path(@memorial), method: :patch) do |f|
+        .mb-3
+          = f.label :qr_code_id, 'Seleccione un código QR', class: 'form-label'
+          = f.collection_select :qr_code_id, @available_qr_codes, :id, :code, {}, class: 'form-select'
+          %small.form-text.text-muted Este código quedará permanentemente asociado a su memorial.
+          
+        .mb-3.mt-4
+          = f.submit 'Asociar QR', class: 'btn btn-primary'
+          = link_to 'Cancelar', @memorial, class: 'btn btn-outline-secondary ms-2'

@@ -2,6 +2,9 @@ class Memorial < ApplicationRecord
   MAX_ALLOWED_PHOTOS = 5
 
   belongs_to :user
+
+  has_one :qr_code
+
   has_one_attached :profile_image
   has_one_attached :hero_image
   has_many_attached :photos
@@ -17,6 +20,11 @@ class Memorial < ApplicationRecord
                      format: { with: /\A\d{4}\z/, message: "debe ser 4 dígitos numéricos" },
                      presence: true,
                      if: -> { is_private? }
+
+  # Método para verificar si un memorial está publicado (tiene QR asociado)
+  def published?
+    qr_code.present?
+  end
 
   def full_name
     "#{first_name} #{last_name}".strip

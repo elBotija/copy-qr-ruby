@@ -23,16 +23,13 @@
 
         - if current_user.admin?
           %li.nav-item.col-12.col-lg-auto
+            = link_to("Dashboard", admin_root_path, class: "nav-link py-2 px-0 px-lg-2")
+          %li.nav-item.col-12.col-lg-auto
             = link_to("Gestionar Órdenes", admin_orders_path, class: "nav-link py-2 px-0 px-lg-2")
           %li.nav-item.col-12.col-lg-auto
+            = link_to("Gestionar QR Codes", admin_qr_codes_path, class: "nav-link py-2 px-0 px-lg-2")
+          %li.nav-item.col-12.col-lg-auto
             = link_to("Plantillas de Correo", admin_email_templates_path, class: "nav-link py-2 px-0 px-lg-2")
-          %ul.navbar-nav.flex-row.flex-wrap.d-lg-none
-            %li.nav-item.col-12.col-lg-auto
-              = link_to('Crear Qr', new_admin_qr_code_path, class: 'nav-link py-2 px-0 px-lg-2')
-
-          %ul.navbar-nav.flex-row.flex-wrap.d-lg-none
-            %li.nav-item.col-12.col-lg-auto
-              = link_to('Crear Qr Promocionales', admin_promo_index_path, class: 'nav-link py-2 px-0 px-lg-2')
 
         - unless current_user.admin?
           %ul.navbar-nav.flex-row.flex-wrap.ms-md-auto

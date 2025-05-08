@@ -1,0 +1,76 @@
+%h1.mb-4 Gestión de Códigos QR
+
+.card.mb-4
+  .card-header
+    %h5 Crear Nuevos Códigos QR
+  .card-body
+    = link_to 'Crear QR Codes', new_admin_qr_code_path, class: 'btn btn-primary'
+    = link_to 'Crear QR Promocionales', admin_promo_index_path, class: 'btn btn-success ms-2'
+
+.card
+  .card-header
+    %h5 Estadísticas
+  .card-body
+    .row
+      .col-md-3
+        .card.text-bg-primary.mb-3
+          .card-body
+            %h5.card-title.text-white Total QR
+            %h2.card-text.text-white= @qr_codes&.count || 0
+      
+      .col-md-3
+        .card.text-bg-success.mb-3
+          .card-body
+            %h5.card-title.text-white Disponibles
+            %h2.card-text.text-white= @qr_codes&.select{|q| q.memorial.nil?}.count || 0
+      
+      .col-md-3
+        .card.text-bg-warning.mb-3
+          .card-body
+            %h5.card-title.text-white En uso
+            %h2.card-text.text-white= @qr_codes&.select{|q| q.memorial.present?}.count || 0
+      
+      .col-md-3
+        .card.text-bg-info.mb-3
+          .card-body
+            %h5.card-title.text-white Porcentaje uso
+            - total = @qr_codes&.count || 0
+            - used = @qr_codes&.select{|q| q.memorial.present?}.count || 0
+            - percentage = total > 0 ? (used.to_f / total * 100).round : 0
+            %h2.card-text.text-white= "#{percentage}%"
+
+.card.mt-4
+  .card-header
+    %h5 Listado de Códigos QR
+  .card-body
+    - if @qr_codes && @qr_codes.any?
+      .table-responsive
+        %table.table.table-striped
+          %thead
+            %tr
+              %th Código
+              %th Tipo de Membresía
+              %th Estado
+              %th Memorial asociado
+              %th Acciones
+          %tbody
+            - @qr_codes.each do |qr|
+              %tr
+                %td= qr.code
+                %td= qr.membership_type
+                %td
+                  - if qr.memorial.present?
+                    %span.badge.bg-success En uso
+                  - else
+                    %span.badge.bg-primary Disponible
+                %td
+                  - if qr.memorial.present?
+                    = link_to qr.memorial.full_name, memorial_by_qr_path(qr.code), target: '_blank'
+                  - else
+                    %span.text-muted No asociado
+                %td
+                  - if qr.memorial.present?
+                    = link_to 'Ver memorial', memorial_by_qr_path(qr.code), class: 'btn btn-sm btn-info', target: '_blank'
+                    = button_to 'Liberar QR', release_admin_qr_code_path(qr), class: 'btn btn-sm btn-warning mt-1', method: :post, data: { confirm: '¿Está seguro? Esto desvinculará el QR del memorial.' }
+    - else
+      .alert.alert-info No hay códigos QR registrados.

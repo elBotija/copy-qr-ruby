@@ -4,8 +4,13 @@ Rails.application.routes.draw do
     member do
       get :verify_pin
       post :verify_pin, to: 'memorials#check_pin'
+      get :attach_qr_form
+      patch :attach_qr
     end
   end
+  
+  # Ruta especial para acceso por QR
+  get '/memorial/:code', to: 'memorials#show_by_qr', as: 'memorial_by_qr'
   
   # Hacer explícita la configuración de Devise
   devise_for :users
@@ -34,7 +39,11 @@ Rails.application.routes.draw do
       end
     end
     resources :promo, only: %i[index show create]
-    resources :qr_codes, only: %i[new create]
+    resources :qr_codes, only: %i[index new create] do
+      member do
+        post :release
+      end
+    end
 
     root 'dashboard#index'
   end

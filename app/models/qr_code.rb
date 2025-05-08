@@ -2,11 +2,20 @@ class QrCode < ApplicationRecord
   MEMBERSHIP_TYPES = ['Recordandote', 'Acompañandote', 'Siempre juntos'].freeze
   CHARACTERS = ('a'..'z').to_a.freeze
 
+  belongs_to :memorial, optional: true
+
   validates :code, presence: true, uniqueness: true
   validates :membership_type, presence: true, inclusion: { in: MEMBERSHIP_TYPES }
   before_validation :generate_code, on: :create
 
   scope :used, -> { where.not(used_at: nil) }
+  # Añadir este scope para consultar los QRs disponibles
+  scope :available, -> { where(memorial_id: nil) }
+
+  # Método para verificar si un QR está disponible
+  def available?
+    memorial_id.nil?
+  end
 
   private
 
