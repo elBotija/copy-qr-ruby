@@ -1,3 +1,5 @@
+- content_for :head do
+  = javascript_include_tag "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js", "data-turbo-track": "reload"
 %h1.mb-4 
   Gestionar Envío - Orden
   = @order.uuid
@@ -64,7 +66,62 @@
             .mb-3
               = f.submit 'Actualizar Información de Envío', class: 'btn btn-primary'
     
-    .col-md-5
+    .col-md-5    
+      .card.mb-4
+        .card-header
+          %h5 QR para esta Orden
+        .card-body
+          - assigned_qrs = @order.qr_codes
+          - if assigned_qrs.any?
+            .alert.alert-success
+              %h6 QR Asociado a esta Orden
+              - assigned_qrs.each do |assigned_qr|
+                %p
+                  %strong Código: 
+                  = assigned_qr.code
+                  %br
+                  %strong Tipo: 
+                  = assigned_qr.membership_type
+                  %br
+                  %strong Estado: 
+                  = assigned_qr.state.humanize
+                
+                .mt-2.mb-3
+                  = button_to release_qr_admin_order_path(@order, qr_id: assigned_qr.id), 
+                    method: :post, 
+                    class: 'btn btn-outline-danger btn-sm',
+                    data: { turbo_confirm: '¿Está seguro? Esto desvinculará el QR de la orden.' } do
+                    %i.bi.bi-x-circle
+                    Desvincular QR
+          - else
+            - membership_type_mapping = {'acompanandote' => 'Acompañandote', 'recordandote' => 'Recordandote', 'siempre' => 'Siempre juntos'}
+            - qr_membership_type = membership_type_mapping[@order.membership_type] || @order.membership_type
+            - available_qrs = QrCode.available.where(membership_type: qr_membership_type)
+            - if available_qrs.any?
+              = form_with(url: assign_qr_admin_order_path(@order), method: :post) do |f|
+                // .mb-3
+                //   = f.label :qr_code_id, 'Seleccionar QR disponible', class: 'form-label'
+                //   = f.collection_select :qr_code_id, available_qrs, :id, :code, {}, 
+                //                      class: 'form-select', id: 'qr-select'
+                
+                .mb-3
+                  = f.label :scanned_code, 'Escanear el QR físico:', class: 'form-label'
+                  .input-group
+                    = f.text_field :scanned_code, class: 'form-control', 
+                                placeholder: 'Código escaneado...', id: 'qr-scanner-input'
+                    %button.btn.btn-outline-secondary#scan-btn{type: 'button'}
+                      %i.bi.bi-camera
+                      Escanear
+                
+                .form-text.mb-3
+                  El código QR debe ser del tipo "#{qr_membership_type}" para esta orden.
+                
+                = f.submit 'Asociar QR a esta Orden', class: 'btn btn-primary'
+                
+            - else
+              .alert.alert-warning
+                No hay códigos QR disponibles del tipo "#{qr_membership_type}".
+                = link_to 'Generar nuevos QRs', new_admin_qr_code_path, class: 'btn btn-sm btn-outline-primary mt-2'
       .card
         .card-header
           %h5 Gestión de Factura
@@ -109,6 +166,8 @@
             = link_to new_admin_invoice_path(order_id: @order.id), class: 'btn btn-primary' do
               %i.bi.bi-upload
               Cargar factura
+
+
 - else
   .alert.alert-warning
     Para gestionar el envío, la orden debe estar en estado "Completado".
@@ -117,3 +176,121 @@
     %span{class: "badge bg-#{order_status_color(@order.status)}"}= @order.status_text
     %br
     = link_to 'Cambiar estado de la orden', edit_admin_order_path(@order), class: 'btn btn-sm btn-outline-primary mt-2'
+
+:javascript
+  var html5QrcodeScanner = null;
+  
+  // Esperar a que el DOM esté listo
+  document.addEventListener('DOMContentLoaded', function() {
+    // Asignar el evento al botón después de que el DOM esté listo
+    document.getElementById('scan-btn').addEventListener('click', function() {
+      initQRScanner();
+    });
+  });
+  
+  // Función principal de inicialización del escáner
+  function initQRScanner() {
+    // Crear un modal para contener el escáner
+    let scannerModal = document.getElementById('scanner-modal');
+    
+    if (!scannerModal) {
+      scannerModal = document.createElement('div');
+      scannerModal.id = 'scanner-modal';
+      scannerModal.style.position = 'fixed';
+      scannerModal.style.top = '0';
+      scannerModal.style.left = '0';
+      scannerModal.style.width = '100%';
+      scannerModal.style.height = '100%';
+      scannerModal.style.backgroundColor = 'rgba(0,0,0,0.9)';
+      scannerModal.style.zIndex = '9999';
+      scannerModal.style.display = 'flex';
+      scannerModal.style.flexDirection = 'column';
+      scannerModal.style.alignItems = 'center';
+      scannerModal.style.justifyContent = 'center';
+      
+      // Crear contenedor para el scanner
+      const scannerContainer = document.createElement('div');
+      scannerContainer.id = 'qr-reader';
+      scannerContainer.style.width = '80%';
+      scannerContainer.style.maxWidth = '500px';
+      
+      // Botón para cerrar el escáner
+      const closeButton = document.createElement('button');
+      closeButton.innerText = 'Cerrar escáner';
+      closeButton.className = 'btn btn-danger mt-3';
+      closeButton.onclick = function() {
+        if (html5QrcodeScanner) {
+          html5QrcodeScanner.clear();
+        }
+        scannerModal.remove();
+      };
+      
+      scannerModal.appendChild(scannerContainer);
+      scannerModal.appendChild(closeButton);
+      document.body.appendChild(scannerModal);
+    } else {
+      scannerModal.style.display = 'flex';
+    }
+    
+    // Configuración del escáner
+    const config = {
+      fps: 10,
+      qrbox: { width: 250, height: 250 },
+      rememberLastUsedCamera: true,
+    };
+    
+    // Inicializar el escáner
+    html5QrcodeScanner = new Html5QrcodeScanner(
+      "qr-reader",
+      config,
+      /* verbose= */ false
+    );
+    
+    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+  }
+  
+  function onScanSuccess(decodedText, decodedResult) {
+    // Detener el escaneo tras obtener un código
+    if (html5QrcodeScanner) {
+      html5QrcodeScanner.clear();
+    }
+    
+    // Separar solo el codigo final
+    const codeParts = decodedText.split('/');
+    const code = codeParts[codeParts.length - 1];
+
+    // Actualizar el campo de entrada con el código escaneado
+    const inputField = document.getElementById('qr-scanner-input');
+    inputField.value = code;
+    
+    // Cerrar el modal
+    const scannerModal = document.getElementById('scanner-modal');
+    scannerModal.style.display = 'none';
+    
+    // Opcional: Notificar al usuario
+    // alert('¡Código QR escaneado exitosamente! Código: ' + decodedText);
+  }
+  
+  function onScanFailure(error) {
+    // Manejar errores silenciosamente
+    console.warn(`Scan error: ${error}`);
+  }
+  
+:css
+  #qr-reader {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+  }
+  
+  #qr-reader__dashboard_section {
+    background-color: #f8f9fa;
+    padding: 10px;
+  }
+  
+  #qr-reader__status_span {
+    background-color: #e9ecef;
+    color: #212529;
+    padding: 5px;
+    border-radius: 3px;
+  }

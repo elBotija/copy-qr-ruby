@@ -36,6 +36,8 @@ Rails.application.routes.draw do
         post :send_invoice
         get :shipping
         patch :shipping, to: "orders#update"
+        post :assign_qr
+        post :release_qr
       end
     end
     resources :promo, only: %i[index show create]

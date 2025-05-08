@@ -1,7 +1,7 @@
 module Admin
   class OrdersController < ApplicationController
     before_action :authenticate_admin!
-    before_action :set_order, only: [:show, :edit, :update, :shipping, :send_tracking, :send_invoice]
+    before_action :set_order, only: [:show, :edit, :update, :shipping, :send_tracking, :send_invoice, :assign_qr, :release_qr]
 
     def index
       @orders = Order.includes(:customer, :shipping_info).order(created_at: :desc)
@@ -75,6 +75,79 @@ module Admin
       end
     end
     
+    def assign_qr
+      @order = Order.find(params[:id])
+      
+      # Mapeo de tipos de membresías (minúsculas a formato del QR)
+      membership_type_mapping = {
+        'acompanandote' => 'Acompañandote',
+        'recordandote' => 'Recordandote',
+        'siempre' => 'Siempre juntos'
+      }
+      
+      # Obtener el tipo de membresía en el formato de QrCode
+      qr_membership_type = membership_type_mapping[@order.membership_type] || @order.membership_type
+      
+      # Determinar el código QR (por selección o escaneo)
+      if params[:scanned_code].present?
+        @qr_code = QrCode.available.find_by(code: params[:scanned_code])
+        
+        if @qr_code.nil?
+          scanned_qr = QrCode.find_by(code: params[:scanned_code])
+          
+          if scanned_qr.nil?
+            redirect_to shipping_admin_order_path(@order), 
+              alert: "El código QR escaneado no existe en el sistema."
+          else
+            redirect_to shipping_admin_order_path(@order), 
+              alert: "El código QR escaneado ya está asignado (#{scanned_qr.state})."
+          end
+          return
+        end
+      else
+        @qr_code = QrCode.available.find_by(id: params[:qr_code_id])
+        
+        if @qr_code.nil?
+          redirect_to shipping_admin_order_path(@order), 
+            alert: "Por favor, seleccione un código QR válido."
+          return
+        end
+      end
+      
+      # Verificar que el tipo de membresía coincide, usando el tipo mapeado
+      if @qr_code.membership_type != qr_membership_type
+        redirect_to shipping_admin_order_path(@order), 
+          alert: "Error: Este QR es para '#{@qr_code.membership_type}' pero la orden es para '#{@order.membership_type}' (#{qr_membership_type})."
+        return
+      end
+      
+      # Asociar QR a la orden
+      if @qr_code.assign_to_order(@order)
+        redirect_to shipping_admin_order_path(@order), 
+          notice: "QR '#{@qr_code.code}' asociado correctamente a esta orden."
+      else
+        redirect_to shipping_admin_order_path(@order), 
+          alert: "Error al asociar el QR: #{@qr_code.errors.full_messages.join(', ')}"
+      end
+    end
+    
+    def release_qr
+      @order = Order.find(params[:id])
+      @qr_code = QrCode.find(params[:qr_id])
+      
+      if @qr_code.order_id != @order.id
+        redirect_to shipping_admin_order_path(@order), 
+          alert: "Este QR no está asociado a esta orden."
+        return
+      end
+      
+      # Liberar el QR
+      @qr_code.update(order_id: nil, state: 'available')
+      
+      redirect_to shipping_admin_order_path(@order), 
+        notice: "QR '#{@qr_code.code}' desvinculado correctamente de esta orden."
+    end
+
     private
 
     def set_order

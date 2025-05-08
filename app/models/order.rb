@@ -3,6 +3,8 @@ class Order < ApplicationRecord
   has_one :shipping_info, dependent: :destroy
   has_many :memberships, dependent: :destroy
   
+  has_many :qr_codes
+
   validates :uuid, presence: true, uniqueness: true
   
   accepts_nested_attributes_for :shipping_info, allow_destroy: true, update_only: true
